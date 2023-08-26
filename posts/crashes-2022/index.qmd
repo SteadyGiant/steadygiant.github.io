@@ -2,7 +2,7 @@
 draft: false
 title: "Cars Make South Jersey Deadly"
 date: "2023-04-16"
-date-modified: "2023-08-25"
+date-modified: "2023-08-26"
 categories: [Car Hell]
 image: "https://ccnwordpress.blob.core.windows.net/journal/2018/12/christine-movie-.jpg"
 image-alt: "The car from the movie, Christine, on fire."
@@ -15,7 +15,6 @@ execute:
 
 ```{r, include=FALSE}
 library(dplyr)
-library(ggplot2)
 library(reactable)
 library(reactablefmtr)
 library(readr)
@@ -23,11 +22,6 @@ library(tidycensus)
 library(tmap)
 
 options(scipen = 999, tigris_use_cache = TRUE)
-ggplot2::theme_set(ggplot2::theme_minimal())
-
-# Unfortunately, my Hugo site theme's JavaScript makes interactive maps
-# not work. Web dev was a mistake.
-tmap::tmap_mode("plot")
 
 tidycensus::census_api_key(Sys.getenv("CENSUS_API_KEY"))
 
@@ -47,9 +41,9 @@ shp = tidycensus::get_decennial(
   dplyr::left_join(fat, by = "FIPS")
 ```
 
-|                                                                                                                                                                                                                                                                                                                                                                            |
+|                                                                                                                                                                                                                                                                                                                                                                                                                |
 |------------------------------------------------------------------------|
-| *Consider signing [**this petition**](https://actionnetwork.org/petitions/dont-widen-the-nj-turnpike-in-south-jersey/) against the proposed widening of the NJ Turnpike in South Jersey. Widening roads doesn't cure congestion; it just gets more cars on the road. That's more emissions, more sprawl, more truck-served warehouses, and more motor vehicle fatalities.* |
+| *If you live anywhere in New Jersey, consider signing [**this petition**](https://actionnetwork.org/petitions/dont-widen-the-nj-turnpike-in-south-jersey/) against the proposed widening of the NJ Turnpike in South Jersey. Widening roads doesn't cure congestion; it just gets more cars on the road. That's more emissions, more sprawl, more truck-served warehouses, and more motor vehicle fatalities.* |
 
 You may have read that motor vehicle fatalities in New Jersey [are rising](https://www.nj.com/news/2023/01/traffic-deaths-on-nj-roads-reach-a-15-year-high.html?outputType=amp) and cops [aren't issuing enough](https://www.nj.com/news/2023/03/as-traffic-deaths-continue-to-rise-in-nj-fewer-tickets-are-being-written.html?outputType=amp) traffic tickets. This got me thinking, which parts of NJ are affected the most?
 
@@ -94,19 +88,20 @@ fat %>%
 Here's a map:
 
 ```{r}
+tmap::tmap_mode("view")
+
 tmap::tm_shape(shp) +
-  # tmap::tm_basemap("CartoDB.Voyager") +
-  tmap::tm_fill(
+  tmap::tm_basemap("CartoDB.Voyager") +
+  tmap::tm_polygons(
     "Fatalities per 1M VMT",
     title = paste(
-      "Motor vehicle fatalities", "per 1 million VMT", sep = "\n"
+      "Motor vehicle fatalities", "per 1 mil VMT", sep = "<br>"
     ),
-    # id = "County",
-    # popup.vars = c("Fatalities per 1M VMT"),
+    id = "County",
+    popup.vars = "Fatalities per 1M VMT",
     alpha = 0.8,
     legend.reverse = TRUE
   ) +
-  tmap::tm_borders() +
   tmap::tm_layout(frame = FALSE, legend.outside = TRUE)
 ```
 
@@ -140,7 +135,7 @@ Look out for ["orange-washing,"](https://twitter.com/Ollie_Cycles/status/1639041
 
 **Step 3**: Organize. If there are any local environmentalist groups in your area, reach out to them and talk about reducing your town's car-dependence. Beyond that, I'm not very qualified to speak on organizing. But I'm still organizing in real life and so can you.
 
-**Step 4**: If there are no other ideas or you're kind of isolated, try an educational petition. Local news is dying, and what's left is usually very pro-car. If your petition tells the story of how your roads got so bad and how nothing is being done to fix them, people will be surprised to hear of it. You may be surprised by the responses.
+**Step 4**: If there are no other ideas or you're kind of isolated, try an educational petition. Local news is dying, and what's left is usually very pro-car. If your petition tells the story of how your roads got so bad and how nothing is being done to fix them, you're giving people in your community a fresh perspective and a specific action thing to do about it. You may be surprised by the responses. See my petition linked at the top for an example.
 
 # Sidenote: Population
 
@@ -178,17 +173,14 @@ fat %>%
 <br>
 
 ```{r}
+tmap::tmap_mode("plot")
+
 tmap::tm_shape(shp) +
-  # tmap::tm_basemap("CartoDB.Voyager") +
-  tmap::tm_fill(
+  tmap::tm_polygons(
     "Fatalities per 100k pop",
     title = paste("Motor vehicle fatalities", "per 100k pop", sep = "\n"),
-    # id = "County",
-    # popup.vars = c("Fatalities per 100k pop"),
-    alpha = 0.8,
     legend.reverse = TRUE
   ) +
-  tmap::tm_borders() +
   tmap::tm_layout(frame = FALSE, legend.outside = TRUE)
 ```
 

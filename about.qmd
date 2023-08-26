@@ -31,4 +31,4 @@ Everyone and every thing you read is biased. There's no such thing as an unbiase
 
 For anyone interested, I built this website with [Quarto](https://quarto.org/docs/websites/website-blog.html) because I want to include interactive data visualizations and code output in my posts. I code in R and Python, but I'll check out other languages.
 
-For data visualization, I usually use [ggplot2](https://ggplot2.tidyverse.org/) for static charts and maps, [Plotly](https://plotly.com/ggplot2/) for interactive charts, [tmap](https://cran.r-project.org/web/packages/tmap/vignettes/tmap-getstarted.html) for interactive maps, and [React Table](https://github.com/tanstack/table/tree/v7) for interactive tables.
+For data visualization, I usually use [ggplot2](https://ggplot2.tidyverse.org/) for static charts and maps, [Plotly](https://plotly.com/ggplot2/) for interactive charts, [tmap](https://cran.r-project.org/web/packages/tmap/vignettes/tmap-getstarted.html) (and [Leaflet](https://leafletjs.com/)) for interactive maps, and [React Table](https://github.com/tanstack/table/tree/v7) for interactive tables.

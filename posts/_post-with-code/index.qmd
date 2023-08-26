@@ -1,0 +1,16 @@
+---
+draft: true
+title: "Post With Code"
+subtitle: "Template"
+date: "2023-08-25"
+date-modified: "2023-08-26"
+categories: [R]
+image: "https://njmonthly.com/wp-content/uploads/cache/2014/07/Artist_Rendering_of_Rowan_Boulevard/3276546288.jpg"
+image-alt: "The traffic circle at Rowan Boulevard in Glassboro."
+---
+
+This is a post with executable code.
+
+```{r}
+1 + 1
+```

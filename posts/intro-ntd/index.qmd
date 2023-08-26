@@ -1,0 +1,174 @@
+---
+draft: false
+title: "Working with the National Transit Database"
+# subtitle: ""
+date: "2023-01-11"
+date-modified: "2023-08-25"
+categories: [Transit, R]
+image: "https://www.transit.dot.gov/sites/fta.dot.gov/files/NTD_LineGraph.jpg"
+image-alt: "A random chart"
+execute:
+  echo: true
+  error: false
+  message: false
+  warning: false
+---
+
+This post is the start of a series I'll write on the [National Transit Database](https://www.transit.dot.gov/ntd) (NTD).
+
+The NTD is a series of Excel spreadsheets released annually, around early November, by the Federal Transit Administration (FTA). For now, I'm interested specifically in [breakdowns data](https://www.transit.dot.gov/ntd/ntd-data?field_product_type_target_id=All&year=all&combine=breakdowns). In this post, I'll describe the breakdowns data set's structure and demonstrate how I clean it using R.
+
+In later posts, I'll use NTD data to talk about transit in the US.
+
+## Getting Started
+
+I download[^1] the [2021 breakdowns dataset](https://www.transit.dot.gov/ntd/data-product/2021-breakdowns) and import it into an R session:
+
+[^1]: An enterprising young programmer could build an R/Python/etc package that automatically downloads NTD data, cleans it, and loads as a DataFrame. The `tidycensus` R package does this well for ACS and decennial Census data.
+
+```{r}
+library(dplyr)   # To clean data.
+library(knitr)   # For pretty data tables.
+library(readxl)  # Guess.
+
+ntd = readxl::read_excel("2021 Breakdowns_static.xlsx", sheet = "Breakdowns")
+
+dplyr::glimpse(ntd)
+```
+
+My purposes need just certain fields and records:
+
+-   **Primary keys:** It's better if I demonstrate what each record represents in the next section.
+
+    -   `NTD ID`: Unique agency ID number.
+
+    -   `Mode`: Transit type. Train, plane, or automobile? I only have energy to cover a few:
+
+        -   Bus (MB)
+
+        -   Commuter Rail (CR)
+
+        -   Heavy Rail (HR)
+
+        -   Light Rail (LR)
+
+    -   `Type of Service`: Whether the transit was Purchased Transit (PT) (contracted out to a private firm) or Directly Operated (DO) (in-house).
+
+-   **Identifying info:**
+
+    -   `Agency`: Agency name and nickname/acronym, if it has one (e.g., Metra, WMATA).
+
+    -   `City`: Agency HQ municipality.
+
+    -   `State`: Agency HQ state.
+
+-   **Metrics:**
+
+    -   `Mean Miles Between Breakdowns` \[calculated\]: Breakdown frequency. $$\frac{VRM}{Total Mechanical Failures}$$
+
+    -   `Total Mechanical Failures`: Breakdowns. $${Major Mechanical Failures} + {Other Mechanical Failures}$$
+
+        -   No `0` values, since this is the denominator in my calculated metric.
+
+    -   `Vehicle/Passenger Car Revenues Miles` (VRM): Total miles run in revenue service.
+
+        -   No `0` values. I only want transit that actually runs.
+
+-   **Quality flags:** Indicate data that don't meet the FTA's quality standards. `"Q"` if data quality is questionable. `"W"` if the agency didn't report this data to the FTA's standards, but the FTA gave them a waiver.
+
+    -   `Total Mechanical Failures Questionable`
+
+        -   No `"Q"` values.
+
+    -   `Vehicle/Passenger Car Revenue Miles Questionable`
+
+        -   No `"Q"` values.
+
+```{r}
+ntd = ntd %>%
+  dplyr::select(
+    `NTD ID`,
+    Mode,
+    `Type of Service`,
+    Agency,
+    `HQ City` = City,
+    State,
+    dplyr::starts_with("Vehicle/Passenger Car Revenue Miles"),
+    dplyr::starts_with("Total Mechanical Failures")
+  ) %>%
+  dplyr::filter(
+    Mode %in% c("CR", "HR", "LR", "MB"),
+    `Vehicle/Passenger Car Revenue Miles Questionable` %in% c("W", NA_character_),
+    `Vehicle/Passenger Car Revenue Miles` > 0,
+    `Total Mechanical Failures Questionable` %in% c("W", NA_character_),
+    `Total Mechanical Failures` > 0
+  ) %>%
+  dplyr::mutate(
+    # Get agency nickname only.
+    Agency = gsub(".*dba: ", "", Agency),
+    `Mean Miles Between Breakdowns` = `Vehicle/Passenger Car Revenue Miles` / `Total Mechanical Failures`
+  ) %>%
+  dplyr::group_by(Mode) %>%
+  dplyr::mutate(Rank = dplyr::min_rank(dplyr::desc(`Mean Miles Between Breakdowns`))) %>%
+  dplyr::ungroup() %>%
+  dplyr::arrange(Mode, Rank)
+
+ntd %>%
+  dplyr::select(Mode, Rank, Agency, `HQ City`, State, `Type of Service`, `Mean Miles Between Breakdowns`) %>%
+  dplyr::filter(Mode == "CR", Rank <= 10) %>%
+  dplyr::mutate(
+    `Mean Miles Between Breakdowns` = scales::comma(`Mean Miles Between Breakdowns`)
+  ) %>%
+  knitr::kable()
+```
+
+## What Each Record Represents
+
+Note that each record is a mode-agency-service. Here's a smaller data set to demonstrate:
+
+```{r}
+ntd %>%
+  dplyr::filter(
+    Mode %in% c("CR", "LR"),
+    Agency %in% c("New Jersey Transit Corporation", "Metra")
+  ) %>%
+  dplyr::select(Mode, Agency, `HQ City`, State, `Type of Service`, `Total Mechanical Failures`) %>%
+  knitr::kable()
+```
+
+Metra runs 2 Commuter Rail (CR) services, one in-house (Directly Operated \[DO\]) and one contracted out (Purchased Transit \[PT\]).
+
+NJ Transit runs just 1 CR service directly, but 2 Light Rail (LR) services. The DO service is the River Line and Newark LR combined; the PT service is the Hudson-Bergen LR.
+
+Hopefully this clarifies what a mode-agency-service record is.
+
+## The Big Guys
+
+I pay special attention to the largest agency-services, those running the most VRM. For each mode, I rank the 10 largest agency-services by breakdown frequency.
+
+```{r}
+biggest = ntd %>%
+  dplyr::group_by(Mode) %>%
+  dplyr::top_n(10, `Vehicle/Passenger Car Revenue Miles`) %>%
+  dplyr::mutate(`Rank, 10 Biggest` = dplyr::min_rank(dplyr::desc(`Mean Miles Between Breakdowns`))) %>%
+  dplyr::ungroup() %>%
+  dplyr::select(`NTD ID`, Mode, `Type of Service`, `Rank, 10 Biggest`)
+
+ntd = dplyr::left_join(ntd, biggest, by = c("NTD ID", "Mode", "Type of Service"))
+
+ntd %>%
+  dplyr::filter(Mode == "CR", !is.na(`Rank, 10 Biggest`)) %>%
+  dplyr::select(
+    Mode,
+    `Rank, 10 Biggest`,
+    Agency,
+    `HQ City`,
+    State,
+    `Type of Service`,
+    `Mean Miles Between Breakdowns`
+  ) %>%
+  dplyr::mutate(`Mean Miles Between Breakdowns` = scales::comma(`Mean Miles Between Breakdowns`)) %>%
+  knitr::kable()
+```
+
+And that's it. I'll post my full rankings soon. In another upcoming post I'll cover why I'm doing this in the first place.

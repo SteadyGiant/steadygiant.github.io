@@ -1,0 +1,422 @@
+---
+draft: false
+title: "Transit Breakdown Rankings: 2021"
+date: "2023-01-12"
+date-modified: "2023-08-25"
+categories: [Transit]
+image: "https://preview.redd.it/we-salute-our-conductors-in-blue-v0-9g7fh32judqa1.png?auto=webp&s=43b2bc8b63a0f55a8e3a05bca96f833a9164d1d2"
+image-alt: "Le meme: In this house we stand for the (NJ Transit logo) flag and kneel for the (Secaucus Junction) cross."
+execute:
+  echo: false
+  error: false
+  message: false
+  warning: false
+---
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(ggrepel)
+library(ggthemes)
+library(glue)
+library(reactable)
+library(reactablefmtr)
+library(readr)
+library(rlang)
+library(scales)
+
+options(scipen = 999)
+ggplot2::theme_set(ggthemes::theme_fivethirtyeight())
+# Override 538 theme, add axis titles.
+ggplot2::theme_update(axis.title.x = ggplot2::element_text(), axis.title.y = ggplot2::element_text())
+
+year = 2021
+
+dat = readr::read_csv(
+  "https://codeberg.org/glassbro/ntd/raw/branch/main/breakdowns_2021.csv"
+) %>%
+  dplyr::select(
+    Agency,
+    State,
+    Mode,
+    `Type of Service`,
+    Rank,
+    `Rank, 10 Biggest`,
+    `Mean Miles Between Breakdowns`,
+    `Total Mechanical Failures`,
+    `Vehicle/Passenger Car Revenue Miles`
+  ) %>%
+  # Shorten or clarify agency names.
+  dplyr::mutate(
+    Agency = dplyr::recode(
+      Agency,
+      "Alternativa de Transporte Integrado -ATI" = "(San Juan, PR) ATI",
+      "Chicago Transit Authority" = "(Chicago) CTA",
+      "Dallas Area Rapid Transit" = "(Dallas) DART",
+      "Denver Regional Transportation District" = "(Denver) RTD",
+      "The Greater Cleveland Regional Transit Authority" = "Cleveland RTA",
+      "Massachusetts Bay Transportation Authority" = "MBTA",
+      "Metra" = "(IL) Metra",
+      "Metro" = "(LA) Metro",
+      "Metro Transit" = "(Minneapolis) METRO",
+      "Metrolink" = "(CA) Metrolink",
+      "Metropolitan Atlanta Rapid Transit Authority" = "(Atlanta) MARTA",
+      "Metropolitan Transit Authority of Harris County, Texas" = "Houston METRO",
+      "MTA Metro-North Railroad" = "MTA Metro-North",
+      "MTA New York City Transit" = "MTA NYC Transit",
+      "MTA Long Island Rail Road" = "MTA LIRR",
+      "Niagara Frontier Transportation Authority" = "Niagara FTA",
+      "New Jersey Transit Corporation" = "NJ Transit",
+      "Port Authority Trans-Hudson Corporation" = "PATH",
+      "Port Authority Transit Corporation" = "PATCO",
+      "San Diego Metropolitan Transit System" = "San Diego MTS",
+      "San Francisco Bay Area Rapid Transit District" = "SF BART",
+      "San Francisco Municipal Transportation Agency" = "SF MTA",
+      "Santa Clara Valley Transportation Authority" = "Santa Clara VTA",
+      "Southeastern Pennsylvania Transportation Authority" = "SEPTA",
+      "Transportation & Public Work" = "(Miami) Transportation & Public Works",
+      "Tri-County Metropolitan Transportation District of Oregon" = "(Portland, OR) TriMet",
+      "Utah Transit Authority" = "(Utah) UTA",
+      "Washington Metropolitan Area Transit Authority" = "WMATA"
+    )
+  ) %>%
+  # If an Agency-Mode (e.g., NJ Transit commuter rail) has 2 records, clarify the service type (purchased transit or
+  # directly operated).
+  dplyr::add_count(Agency, Mode) %>%
+  dplyr::mutate(Agency = dplyr::if_else(n > 1, glue::glue("{Agency} - {`Type of Service`}"), Agency)) %>%
+  dplyr::select(-n)
+
+
+prep_mode = function(dat, mode) {
+  dat = dat %>%
+    dplyr::filter(Mode == mode) %>%
+    dplyr::select(-Mode)
+  
+  if (mode == "LR") {
+    dat = dat %>%
+      dplyr::mutate(
+        Agency = dplyr::recode(
+          Agency,
+          "NJ Transit - PT" = "NJ Transit - PT: Hudson-Bergen",
+          "NJ Transit - DO" = "NJ Transit - DO: River Line, Nwk LR"
+        )
+      )
+  }
+  
+  dat
+}
+
+
+expand_mode = function(m) {
+  switch(
+    m,
+    "CR" = "Commuter Rail",
+    "HR" = "Heavy Rail",
+    "LR" = "Light Rail",
+    "MB" = "Bus"
+  )
+}
+
+
+make_table = function(mode) {
+  dat %>%
+    prep_mode(mode) %>%
+    dplyr::select(-`Rank, 10 Biggest`) %>%
+    reactable::reactable(
+      # bordered = TRUE,
+      columns = list(
+        `Vehicle/Passenger Car Revenue Miles` = reactable::colDef(format = reactable::colFormat(separators = TRUE)),
+        `Mean Miles Between Breakdowns` = reactable::colDef(
+          format = reactable::colFormat(digits = 0, separators = TRUE)
+        )
+      ),
+      defaultSorted = "Rank",
+      filterable = TRUE,
+      highlight = TRUE,
+      striped = TRUE,
+      theme = reactablefmtr::fivethirtyeight()
+    )
+}
+
+
+CAPTION = "Source: National Transit Database, FTA\nChart from glassbro.blog"
+
+
+big_comma_format = function() {
+  scales::label_comma(scale_cut = scales::cut_long_scale())
+}
+
+
+make_scatter = function(
+    mode, cond = NULL, ref_lines = TRUE, label_big_only = TRUE, not_label_small_breaky = TRUE, nudge = TRUE
+) {
+  dat = dat %>%
+    prep_mode(mode)
+  
+  if (!is.null(cond)) {
+    cond = rlang::parse_expr(cond)
+    dat = dplyr::filter(dat, eval(cond))
+  }
+  
+  p = dat %>%
+    ggplot2::ggplot(ggplot2::aes(x = `Vehicle/Passenger Car Revenue Miles`, y = `Mean Miles Between Breakdowns`)) +
+    ggplot2::geom_point()
+  
+  if (ref_lines) {
+    p = p +
+      ggplot2::geom_hline(yintercept = mean(dat$`Mean Miles Between Breakdowns`)) +
+      ggplot2::geom_vline(xintercept = mean(dat$`Vehicle/Passenger Car Revenue Miles`))
+  }
+  
+  p +
+    ggrepel::geom_label_repel(
+      ggplot2::aes(label = Agency),
+      data = if (label_big_only) {
+        subset(dat, `Vehicle/Passenger Car Revenue Miles` > mean(`Vehicle/Passenger Car Revenue Miles`))
+      } else if (not_label_small_breaky) {
+        subset(
+          dat,
+          `Vehicle/Passenger Car Revenue Miles` > mean(`Vehicle/Passenger Car Revenue Miles`) |
+            `Mean Miles Between Breakdowns` > mean(`Mean Miles Between Breakdowns`)
+        )
+      } else {
+        NULL
+      },
+      nudge_x = ifelse(nudge, 1000000, 0),
+      nudge_y = ifelse(nudge, 2000, 0)
+    ) +
+    ggplot2::scale_x_continuous(labels = big_comma_format()) +
+    ggplot2::scale_y_continuous(labels = big_comma_format()) +
+    ggplot2::labs(title = "Size vs. Reliability", subtitle = year, caption = CAPTION)
+}
+
+
+make_bar = function(mode) {
+  full_mode = expand_mode(mode)
+  dat %>%
+    prep_mode(mode) %>%
+    dplyr::filter(!is.na(`Rank, 10 Biggest`)) %>%
+    ggplot2::ggplot() +
+    ggplot2::geom_bar(
+      ggplot2::aes(
+        x = `Mean Miles Between Breakdowns`,
+        y = reorder(Agency, `Mean Miles Between Breakdowns`),
+        fill = Agency
+      ),
+      stat = "identity"
+    ) +
+    ggplot2::scale_x_continuous(expand = ggplot2::expansion(mult = c(0, 0.1)), labels = big_comma_format()) +
+    ggplot2::theme(legend.position = "none") +
+    ggplot2::labs(
+      title = glue::glue("Reliability: 10 Biggest {full_mode}"),
+      subtitle = year,
+      caption = paste(
+        "'Biggest' = Most vehicle/passenger car revenue miles traveled",
+        CAPTION,
+        sep = "\n"
+      ),
+      y = ""
+    )
+}
+```
+
+> But all of a sudden, right at the \[edge\] of the \[Hudson\], Puff! Chug! Squeak! Squea-ea-eak! The Engine broke down; the wheels slid along a little farther with a shrieking, wailing cry and then stood perfectly still. Now how was the train to cross the \[Hudson\] and get her \[commuters\] over there in time for the \[work day\]?
+>
+> --- Modified from "The Little Engine That Could," *My Bookhouse: The Latch Key* (1921), [p. 193](https://archive.org/details/latchkeyofmybook01mill/page/192/mode/2up)
+
+In this post, I rank transit agencies by their breakdown frequency, or *Mean Distance Between Breakdowns*[^1]. This metric answers the question: How many miles do the trains/buses travel before breaking down, on average? The higher, the better. My data source is the FTA's [National Transit Database](https://www.transit.dot.gov/ntd/data-product/2021-breakdowns) for **2021**. I cover my methodology in more detail [elsewhere](https://glassbro.blog/ntd-2021).
+
+[^1]: Calculated as $$\frac{Vehicle And Passenger Car Revenue Miles}{Total Mechanical Failures}$$ where $$Total Mechanical Failures = Major Mechanical Failures + Other Mechanical Failures$$. `Vehicle/Passenger Car Revenue Miles` means "The miles that vehicles (or passenger cars, for rail service) travel while in revenue service (vehicle revenue miles \[VRM\]) plus deadhead miles. Vehicle miles exclude miles for charter services, school bus service, operator training, and vehicle maintenance testing." Source: The "Data Dictionary" tab of [this spreadsheet](https://www.transit.dot.gov/ntd/data-product/2021-breakdowns).
+
+I pay special attention to transit agencies operating in New Jersey and nearby like NJ Transit PATH, PATCO, and the MTA because I've ridden with them.
+
+I only rank agencies in the transit categories listed in the table of contents. Others like Bus Rapid Transit, Commuter Bus, and Streetcar Rail aren't here.
+
+# Commuter Rail
+
+The rankings:
+
+```{r}
+MODE = "CR"
+make_table(MODE)
+```
+
+The Northern New England Passenger Rail Authority operates the most reliable commuter rail. In my area, PennDoT comes in 2nd and Metro-North and LIRR rank well. NJ Transit falls exactly in the middle, 14th most reliable out of 28 reporting agencies.
+
+Plotting this data clarifies things. (Reference lines are averages.) The Big 3 commuter rails--Metro-North, the Long Island Rail Road, and NJ Transit--are *huge*; among them, NJT breaks down the most often, and is less reliable than average.
+
+```{r}
+make_scatter(MODE, label_big_only = FALSE) +
+  ggplot2::annotate("text", label = "Big, Sturdy", x = 35000000, y = 1250000, color = "darkgreen") +
+  ggplot2::annotate("text", label = "Small, Sturdy", x = 4000000, y = 1250000, color = "darkgreen") +
+  ggplot2::annotate("text", label = "Big, Breaky", x = 35000000, y = -50000, color = "red") +
+  ggplot2::annotate("text", label = "Small, Breaky", x = 4000000, y = -50000, color = "red")
+```
+
+Finally, here are the 10 largest (by miles traveled) commuter rails:
+
+```{r}
+make_bar(MODE)
+```
+
++-------------------------------------------------------------------------------------------------+
+| ## NJ Transit Commuter Rail takeaways                                                           |
+|                                                                                                 |
+| -   Among the 10 largest commuter rail agencies, NJT is the 6th most reliable.                  |
+| -   NJT should especially compare its commuter rail to the similarly huge Metro-North and LIRR. |
+| -   NJT commuter rail remains much less reliable than Metro-North and LIRR.                     |
++-------------------------------------------------------------------------------------------------+
+
+# Bus
+
+```{r}
+MODE = "MB"
+make_table(MODE)
+```
+
+Note that NJ Transit has 2 records: One for its *Purchased Transit* (PT) or contracted buses, and one for its *Directly Operated* (DO) buses. While NJT's PT buses break down less often, they also drive much less than the DO buses. (And apparently [the PT ones sometimes don't show up](https://www.northjersey.com/story/news/transportation/2022/04/21/nj-transit-riders-coach-usa-buses-no-show/9461205002/).)
+
+```{r}
+make_scatter(MODE)
+```
+
+It's not the prettiest picture, but a few things are clear. Like its commuter rail, NJ Transit's bus system is almost peerlessly large. NJT buses break down more often than average, but do fairly well compared to similarly huge agencies, beating NYC's MTA, LA's Metro, Chicago's CTA, and Philly's SEPTA. Boston's MBTA, though relatively smaller, does quite well.
+
+Focusing on the 10 largest bus systems (again, by miles traveled), NJT comes out on top.
+
+```{r}
+make_bar(MODE)
+```
+
++------------------------------------------------------------------------------------------------+
+| ## NJ Transit Bus takeaways                                                                    |
+|                                                                                                |
+| -   Among the 10 largest bus agencies, NJT's directly operated buses are the #1 most reliable. |
+| -   Among all bus systems, big and small, NJT's buses are still less reliable than average.    |
++------------------------------------------------------------------------------------------------+
+
+# Light Rail
+
+```{r}
+MODE = "LR"
+make_table(MODE)
+```
+
+```{r}
+make_scatter(MODE) +
+  ggplot2::annotate("text", label = "Big, Sturdy", x = 9000000, y = 45000, color = "darkgreen") +
+  ggplot2::annotate("text", label = "Small, Sturdy", x = 2500000, y = 45000, color = "darkgreen") +
+  ggplot2::annotate("text", label = "Big, Breaky", x = 9000000, y = 2000, color = "red") +
+  ggplot2::annotate("text", label = "Small, Breaky", x = 2500000, y = 2000, color = "red")
+```
+
+NJ Transit is hidden in the "Small, Breaky" quadrant. Cutting out the Big ones:
+
+```{r}
+make_scatter(
+  MODE,
+  cond = "`Vehicle/Passenger Car Revenue Miles` < mean(`Vehicle/Passenger Car Revenue Miles`)",
+  ref_lines = FALSE,
+  label_big_only = FALSE,
+  not_label_small_breaky = FALSE,
+  nudge = FALSE
+)
+```
+
+We now see NJ Transit reports two light rail groups to the FTA: The Hudson-Bergen LR, which is purchased transit, and a combined record for the directly operated River Line and Newark LRs.
+
+Neither of NJT's LR groups do particularly well, and the directly operated lines are the less reliable ones.
+
+I find it odd that NJ Transit runs some of the largest commuter rail and bus systems in the country, yet some of the tiniest light rails. Even combining the PT and DO vehicle/passenger car revenue miles doesn't place them among the 10 largest. But that's for another post.
+
++----------------------------------------------------------------------------------------+
+| ## NJ Transit Light Rail takeaways                                                     |
+|                                                                                        |
+| -   Among all 23 reporting light rails, NJT's are much less reliable than average.     |
+| -   The Newark LR and River Line together are 3rd *worst* for breakdown frequency.     |
+| -   The Newark LR and River Line together are less reliable than the Hudson-Bergen LR. |
++----------------------------------------------------------------------------------------+
+
+Now beyond New Jersey, here are the largest light rail services:
+
+```{r}
+make_bar(MODE)
+```
+
+LA, Dallas, Portland Oregon, and Denver have great, big light rail. Let's be like them.
+
+# Heavy Rail
+
+NJ Transit doesn't have heavy rail, but 2 agencies *do* run heavy rail in NJ:
+
+1.  The Port Authority Trans-Hudson Corporation (PATH), running trains from Essex and Hudson counties into NYC;
+2.  The Port Authority Corporation (PATCO), running trains from Camden County into Philadelphia.
+
+```{r}
+MODE = "HR"
+make_table(MODE)
+```
+
+WMATA is the most reliable, but PATH ranks 4th. PATCO lags behind in 10th out of 15.
+
+Plotting it:
+
+```{r}
+make_scatter(MODE, label_big_only = FALSE, not_label_small_breaky = TRUE) +
+  ggplot2::annotate("text", label = "Big, Sturdy", x = 200000000, y = 300000, color = "darkgreen") +
+  ggplot2::annotate("text", label = "Small, Sturdy", x = 16000000, y = 300000, color = "darkgreen") +
+  ggplot2::annotate("text", label = "Big, Breaky", x = 200000000, y = 0, color = "red") +
+  ggplot2::annotate("text", label = "Small, Breaky", x = 16000000, y = 0, color = "red")
+```
+
+We see just how peerlessly massive the NYC subway is. It breaks down as often as much smaller systems, but I'm not sure this is a fair comparison. In any case, Washington state's WMATA is great; SEPTA, San Francisco's BART, and PATH are good; and Chicago's CTA is bad. PATCO is hidden in the Small and Breaky cluster.
+
+Zooming in on Small ones:
+
+```{r}
+make_scatter(
+  MODE,
+  cond = "`Vehicle/Passenger Car Revenue Miles` < mean(`Vehicle/Passenger Car Revenue Miles`)",
+  ref_lines = FALSE,
+  label_big_only = FALSE,
+  not_label_small_breaky = FALSE,
+  nudge = FALSE
+)
+```
+
+Now we see PATCO. For all the [praise PATCO rightfully gets](https://www.youtube.com/watch?v=Z5-mVy1KP70) in other areas, it breaks down more often than the similarly sized Maryland TA and the bigger LA Metro.
+
+Finally, here are the 10 biggest heavy rail systems:
+
+```{r}
+make_bar(MODE)
+```
+
+Across the Delaware from PATCO, SEPTA is both much bigger and more reliable, so I believe PATCO can improve.
+
++-----------------------------------------------------------------------------------------------+
+| ## PATH & PATCO takeaways                                                                     |
+|                                                                                               |
+| -   PATH is 4th most reliable of all 15 heavy rail agencies and performs better than average. |
+| -   PATH is much less reliable than similarly sized SEPTA heavy rail.                         |
+| -   PATCO ranks poorly: 10th most reliable out of 15.                                         |
+| -   PATCO break down more often than similar-ish-ly sized heavy rail systems.                 |
++-----------------------------------------------------------------------------------------------+
+
+# Conclusions
+
+None of NJ Transit's modes are the worst for breakdown frequency. Among their peers:
+
+-   NJT commuter rail is mediocre
+
+-   NJT buses are the best
+
+-   NJT light rail is bad
+
+For heavy rail in NJ:
+
+-   PATH is good
+
+-   PATCO is bad
+
+To be clear, by "good" or "bad" I just mean "more or less \[respectively\] reliable than average and/or similarly sized peers." These are my completely subjective judgements of the above rankings.

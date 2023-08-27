@@ -3,7 +3,7 @@ draft: false
 title: "Working with the National Transit Database"
 # subtitle: ""
 date: "2023-01-11"
-date-modified: "2023-08-25"
+date-modified: "2023-08-27"
 categories: [Transit, R]
 image: "https://www.transit.dot.gov/sites/fta.dot.gov/files/NTD_LineGraph.jpg"
 image-alt: "A random chart"
@@ -31,7 +31,10 @@ library(dplyr)   # To clean data.
 library(knitr)   # For pretty data tables.
 library(readxl)  # Guess.
 
-ntd = readxl::read_excel("2021 Breakdowns_static.xlsx", sheet = "Breakdowns")
+url = "https://www.transit.dot.gov/sites/fta.dot.gov/files/2022-10/2021%20Breakdowns_static.xlsx"
+tmp = tempfile()
+download.file(url, tmp, mode = "wb")
+ntd = readxl::read_excel(tmp, sheet = "Breakdowns")
 
 dplyr::glimpse(ntd)
 ```

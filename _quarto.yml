@@ -4,7 +4,6 @@ project:
 website:
   title: "Glassbro"
   description: "Data, Politics, etc."
-  site-url: https://glassbro.blog/
   navbar:
     right:
       - about.qmd

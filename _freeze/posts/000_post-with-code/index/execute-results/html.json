@@ -1,0 +1,14 @@
+{
+  "hash": "4e880d4be7c7d23f0eac9b1be7281c01",
+  "result": {
+    "markdown": "---\ndraft: true\ntitle: \"Post With Code\"\nsubtitle: \"Template\"\ndate: \"2023-08-25\"\ndate-modified: \"2023-08-26\"\ncategories: [R]\nimage: \"https://njmonthly.com/wp-content/uploads/cache/2014/07/Artist_Rendering_of_Rowan_Boulevard/3276546288.jpg\"\nimage-alt: \"The traffic circle at Rowan Boulevard in Glassboro.\"\n---\n\n\nThis is a post with executable code.\n\n\n::: {.cell}\n\n```{.r .cell-code}\n1 + 1\n```\n\n::: {.cell-output .cell-output-stdout}\n```\n[1] 2\n```\n:::\n:::\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

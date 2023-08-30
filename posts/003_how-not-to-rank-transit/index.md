@@ -3,7 +3,7 @@ draft: false
 title: "How Not to Rank Transit"
 subtitle: "Denominators are good"
 date: "2023-01-13"
-# date-modified: ""
+date-modified: "2023-08-30"
 categories: [Transit]
 # image: ""
 # image-alt: ""
@@ -34,7 +34,7 @@ Consider the MTA's Long Island Rail Road (LIRR). In 2021, they [reported](https:
 Instead, we should compare breakdown *frequency*. [Transit agencies](https://www.njtransit.com/improve/on-time-performance/rail) often track this as Mean Distance Between Failures, or $\frac{Vehicle And Passenger Car Revenue Miles}{Breakdowns}$. This tells us how many miles an agency's trains or buses travel, on average, before breaking down. The higher the better.
 
 | Agency                    | Vehicle/Passenger Car Revenue Miles | Breakdowns | Mean Miles Between Breakdowns |
-|---------------------------|-------------------------------------|------------|-------------------------------|
+|----------------|----------------------|----------------|-------------------|
 | MTA Long Island Rail Road | 58,398,960                          | 78         | 748,705                       |
 | Minneapolis METRO         | 158,717                             | 2          | 79,359                        |
 
@@ -58,5 +58,10 @@ Thankfully, NJ.com isn't publishing more of these bad articles.[^2] Even more fo
 
 But a problem lurks. Imagine a future where we fully fund NJ Transit. It'd be easy for a reactionary shithead to convince people that NJ Transit remains the Worst In The Nation despite all the money we pumped into it. They'd seem legit because NJ.com did the same analysis for years. Don't lend credibility to austerity boosters by sanitizing bad analysis in our state's Paper of Record.
 
-| I humbly request that:<br/><br/>1. NJ.com either delete these bad breakdown articles or preface them with "This article is wrong" at the top in big, bold font;<br/> <br/>2. The American Prospect and everyone else citing these articles stop doing so;<br/> <br/>3. If we must, rank transit by breakdown *frequency*, not total breakdowns. I demonstrate how to do that \[here\]({{< ref "post/transit-breakdown-rankings-2021" >}} "Transit Breakdown Rankings: 2021"). |
-|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+I humbly request that:
+
+1.  NJ.com either delete these bad breakdown articles or preface them with "This article is wrong" at the top in big, bold font;
+
+2.  The American Prospect and everyone else citing these articles stop doing so;
+
+3.  If we must, rank transit by breakdown *frequency*, not total breakdowns. I demonstrate how to do that [here](../002_transit-breakdown-rankings-2021/index.qmd).

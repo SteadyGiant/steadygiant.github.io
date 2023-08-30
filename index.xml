@@ -121,10 +121,10 @@
 <p>Instead, we should compare breakdown <em>frequency</em>. <a href="https://www.njtransit.com/improve/on-time-performance/rail">Transit agencies</a> often track this as Mean Distance Between Failures, or <img src="https://latex.codecogs.com/png.latex?%5Cfrac%7BVehicle%20And%20Passenger%20Car%20Revenue%20Miles%7D%7BBreakdowns%7D">. This tells us how many miles an agency’s trains or buses travel, on average, before breaking down. The higher the better.</p>
 <table class="table">
 <colgroup>
-<col style="width: 25%">
-<col style="width: 34%">
-<col style="width: 11%">
-<col style="width: 28%">
+<col style="width: 21%">
+<col style="width: 30%">
+<col style="width: 21%">
+<col style="width: 26%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -154,18 +154,12 @@
 <p>Take it from a more reputable news source like… NJ.com. The same author<sup>1</sup> of the above articles wrote <a href="https://www.nj.com/news/g66l-2019/01/b68e7cecf93393/nj-transit-just-hired-a-boss-f.html">this one</a> comparing NJ Transit and LIRR’s Mean Distance Between Breakdowns, not their total breakdowns.</p>
 <p>Thankfully, NJ.com isn’t publishing more of these bad articles.<sup>2</sup> Even more fortunately, the NJ Democrats, who hold a trifecta, <a href="https://www.nj.com/opinion/2019/10/sweeney-no-more-excuses-its-time-to-fix-nj-transit.html">seem to</a> correctly believe that years of under-funding caused NJ Transit’s issues, and that the solution is full, stable funding.<sup>3</sup> Then again, their leader got <a href="https://newjerseymonitor.com/2021/11/10/sweeney-concedes-stunning-loss-to-republican-durr/">ousted</a> and they’re <a href="https://www.politico.com/news/2022/12/11/new-jersey-bail-system-roll-back-00072781">sliiiiiding to the right</a> on other issues.</p>
 <p>But a problem lurks. Imagine a future where we fully fund NJ Transit. It’d be easy for a reactionary shithead to convince people that NJ Transit remains the Worst In The Nation despite all the money we pumped into it. They’d seem legit because NJ.com did the same analysis for years. Don’t lend credibility to austerity boosters by sanitizing bad analysis in our state’s Paper of Record.</p>
-<table>
-<colgroup>
-<col style="width: 100%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>I humbly request that:<br><br>1. NJ.com either delete these bad breakdown articles or preface them with “This article is wrong” at the top in big, bold font;<br> <br>2. The American Prospect and everyone else citing these articles stop doing so;<br> <br>3. If we must, rank transit by breakdown <em>frequency</em>, not total breakdowns. I demonstrate how to do that [here]( “Transit Breakdown Rankings: 2021”).</th>
-</tr>
-</thead>
-<tbody>
-</tbody>
-</table>
+<p>I humbly request that:</p>
+<ol type="1">
+<li><p>NJ.com either delete these bad breakdown articles or preface them with “This article is wrong” at the top in big, bold font;</p></li>
+<li><p>The American Prospect and everyone else citing these articles stop doing so;</p></li>
+<li><p>If we must, rank transit by breakdown <em>frequency</em>, not total breakdowns. I demonstrate how to do that <a href="../../posts/002_transit-breakdown-rankings-2021/index.html">here</a>.</p></li>
+</ol>
 
 
 

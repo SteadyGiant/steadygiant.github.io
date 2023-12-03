@@ -1,0 +1,62 @@
+---
+draft: true
+title: "K-12 Enrollment in Gloucester County, NJ"
+date: "2023-12-02"
+# date-modified: ""
+categories: [Education]
+image: ""
+image-alt: ""
+execute:
+  echo: false
+  error: false
+  message: false
+  warning: false
+---
+
+Chart countywide enrollment over time.
+
+Facet chart enrollment over time by district.
+
+```{r}
+
+sd_glouco %>%
+  filter(`District Type` %in% c("Elementary", "Unified")) %>%
+  make_map() +
+  labs(
+    title    = "Gloucester County",
+    subtitle = "Unified and Elementary school districts",
+    fill     = paste(
+      "% Change in K-12 Enrollment,", "Fall 2012 to Fall 2022", sep = "\n"
+    ),
+    caption = paste(
+      "Note: Countywide total enrollment fell by 2.6%",
+      "",
+      "Data from NJ Dept of Ed",
+      "Map by glassbro.blog",
+      sep = "\n"
+    )
+  )
+```
+
+```{r}
+
+sd_glouco %>%
+  make_table()
+```
+
+```{r}
+
+sd_yr %>%
+  filter(grepl("Glassboro", District)) %>%
+  make_chart() +
+  labs(
+    title    = "Glassboro K-12 enrollment slowly rising again",
+    caption  = paste(
+      "Note: Total enrollment in Gloucester County fell by 2.6%",
+      "",
+      "Data from NJ Dept of Ed",
+      "Map by glassbro.blog",
+      sep = "\n"
+    )
+  )
+```

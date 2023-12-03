@@ -14,13 +14,13 @@ execute:
 ---
 
 ```{r, include=FALSE}
-library(dplyr)
-library(readr)
-library(scales)
-
-df = read_csv(
-  "https://raw.githubusercontent.com/SteadyGiant/nj-schools/trunk/data/clean/enrollment_2012-13_2022-23.csv"
-)
+# library(dplyr)
+# library(readr)
+# library(scales)
+# 
+# df = read_csv(
+#   "https://raw.githubusercontent.com/SteadyGiant/nj-schools/trunk/data/clean/enrollment_2012-13_2022-23.csv"
+# )
 ```
 
 Every Spring, the New Jersey Department of Education releases a [Fall Enrollment Report](https://www.nj.gov/education/doedata/enr/) for the current academic year. Each report is an Excel workbook

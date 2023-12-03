@@ -1,0 +1,14 @@
+{
+  "hash": "52e78a822097822a6fa14aebcb6c823a",
+  "result": {
+    "markdown": "---\ndraft: true\ntitle: \"K-12 Enrollment in Gloucester County, NJ\"\ndate: \"2023-12-02\"\n# date-modified: \"\"\ncategories: [Education]\nimage: \"\"\nimage-alt: \"\"\nexecute:\n  echo: false\n  error: false\n  message: false\n  warning: false\n---\n\n::: {.cell}\n\n:::\n\n\nChart countywide enrollment over time.\n\nFacet chart enrollment over time by district.\n\n\n::: {.cell}\n\n:::\n\n::: {.cell}\n\n:::\n\n::: {.cell}\n\n:::\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

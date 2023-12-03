@@ -1,0 +1,514 @@
+---
+draft: false
+title: "How New Jersey's K-12 Enrollment Changed"
+date: "2023-12-03"
+# date-modified: ""
+categories: [Education]
+image: ""
+image-alt: ""
+execute:
+  echo: false
+  error: false
+  message: false
+  warning: false
+---
+
+```{r, include=FALSE}
+
+library(dplyr)
+library(ggplot2)
+library(reactable)
+library(readr)
+library(scales)
+library(sf)
+library(stringr)
+library(tidycensus)
+library(tidyr)
+```
+
+```{r, include=FALSE}
+
+# https://njogis-newjersey.opendata.arcgis.com/datasets/newjersey::county-boundaries-of-nj/about
+geo_co = st_read(
+  "https://maps.nj.gov/arcgis/rest/services/Framework/Government_Boundaries/MapServer/1/query?outFields=*&where=1%3D1&f=geojson"
+) %>%
+  mutate(COUNTY_CODE = stringr::str_pad(FIPSCO, 2, "left", "0")) %>%
+  select(COUNTY_CODE, COUNTY_LABEL)
+
+# https://njogis-newjersey.opendata.arcgis.com/datasets/newjersey::school-districts-unified-for-new-jersey/about
+geo_sd_uni = st_read(
+  "https://maps.nj.gov/arcgis/rest/services/Framework/SchoolDistricts/MapServer/2/query?outFields=*&where=1%3D1&f=geojson"
+) %>%
+  # GlouCo only.
+  filter(grepl("^15\\-", NJDOE_ID_U)) %>%
+  rename(NJDOE_ID = NJDOE_ID_U)
+
+# https://njogis-newjersey.opendata.arcgis.com/datasets/newjersey::school-districts-elementary-for-new-jersey/about
+geo_sd_elem = st_read(
+  "https://maps.nj.gov/arcgis/rest/services/Framework/SchoolDistricts/MapServer/0/query?outFields=*&where=1%3D1&f=geojson"
+) %>%
+  filter(grepl("^15\\-", NJDOE_ID_E)) %>%
+  rename(NJDOE_ID = NJDOE_ID_E)
+
+# https://njogis-newjersey.opendata.arcgis.com/datasets/newjersey::school-districts-secondary-for-new-jersey/about
+geo_sd_sec = st_read(
+  "https://maps.nj.gov/arcgis/rest/services/Framework/SchoolDistricts/MapServer/1/query?outFields=*&where=1%3D1&f=geojson"
+) %>%
+  filter(grepl("^15\\-", NJDOE_ID_S)) %>%
+  rename(NJDOE_ID = NJDOE_ID_S)
+
+geo_sd = bind_rows(geo_sd_uni, geo_sd_elem, geo_sd_sec) %>%
+  # geometry retained
+  select(NJDOE_ID, SD_TYPE)
+
+rm(geo_sd_uni, geo_sd_elem, geo_sd_sec)
+```
+
+```{r, include=FALSE}
+
+# Includes state, county totals.
+sd_yr = read_csv(
+  "https://raw.githubusercontent.com/SteadyGiant/nj-schools/trunk/data/clean/enrollment_2012-13_2022-23.csv"
+) %>%
+  mutate(
+    NJDOE_ID    = paste0(COUNTY_CODE, "-", DISTRICT_CODE),
+    # For easier reactable filtering.
+    COUNTY_NAME = as.factor(COUNTY_NAME)
+  ) %>%
+  arrange(DISTRICT_CODE, YEAR) %>%
+  select(
+    NJDOE_ID,
+    COUNTY_CODE,
+    DISTRICT_CODE,
+    `Academic Year`    = YEAR_LONG,
+    District           = DISTRICT_NAME,
+    County             = COUNTY_NAME,
+    `K-12 Enrollment`  = K_12_ENROLLMENT,
+    Change             = CHG_K_12_ENROLLMENT,
+    `% Change`         = PCT_CHG_K_12_ENROLLMENT,
+    `10-year Change`   = CHG_10Y_K_12_ENROLLMENT,
+    `10-year % Change` = PCT_CHG_10Y_K_12_ENROLLMENT
+  )
+
+st_yr = sd_yr %>%
+  filter(COUNTY_CODE == "99", DISTRICT_CODE == "9999") %>%
+  select(
+    `Academic Year`,
+    `K-12 Enrollment`,
+    Change,
+    `% Change`,
+    `10-year Change`,
+    `10-year % Change`
+  )
+
+# Includes state, county totals.
+sd = sd_yr %>%
+  filter(`Academic Year` %in% c("2012-13", "2022-23")) %>%
+  pivot_wider(
+    id_cols      = c(NJDOE_ID, COUNTY_CODE, DISTRICT_CODE),
+    names_from   = `Academic Year`,
+    names_prefix = "K-12 Enrollment, ",
+    values_from  = `K-12 Enrollment`
+  ) %>%
+  # Standardize names.
+  left_join(
+    sd_yr %>%
+      filter(`Academic Year` == "2022-23") %>%
+      select(
+        COUNTY_CODE,
+        DISTRICT_CODE,
+        District,
+        County,
+        `10-year Change`,
+        `10-year % Change`
+      ),
+    by = c("COUNTY_CODE", "DISTRICT_CODE")
+  ) %>%
+  relocate(District, County, .before = starts_with("K-12")) %>%
+  # Some districts don't have data for all years. See County Code 05 District Code
+  # 0200 in sd_yr.
+  filter(!is.na(`10-year Change`))
+
+# Includes state total.
+# Start with geo_co so the output is an sf object, not just a DF.
+co = geo_co %>%
+  right_join(
+    sd %>%
+      filter(DISTRICT_CODE == "9999", County != "Charters"),
+    by = "COUNTY_CODE"
+  ) %>%
+  select(County:last_col())
+
+# Includes state, county totals.
+sd_glouco = geo_sd %>%
+  right_join(
+    sd %>%
+      filter(County %in% c("Gloucester", "State Total")),
+    by = "NJDOE_ID"
+  ) %>%
+  mutate(
+    `District Type` = dplyr::case_match(
+      SD_TYPE,
+      "E" ~ "Elementary",
+      "S" ~ "Secondary",
+      "U" ~ "Unified"
+    )
+  ) %>%
+  relocate(`District Type`, .after = District) %>%
+  select(District:last_col())
+
+sd = sd %>%
+  select(District:last_col())
+
+rm(geo_co, geo_sd)
+```
+
+```{r, include=FALSE}
+
+make_chart = function(d) {
+  d %>%
+    ggplot() +
+    geom_col(
+      aes(
+        x = `Academic Year`,
+        y = `K-12 Enrollment`,
+        # FIXME: This is a hack. It actually does the opposite, and uses blue &
+        # coral instead.
+        fill = if_else(Change < 0, "green", "red")
+      )
+    ) +
+    theme_minimal() +
+    theme(axis.text.x = element_text(angle = 45, vjust = 1.6, hjust = 1.2)) +
+    scale_y_continuous(labels = scales::comma) +
+    labs(
+      caption = paste(
+        "Data from NJ Dept of Ed",
+        "Chart by glassbro.blog",
+        sep = "\n"
+      )
+    ) +
+    guides(fill = "none")
+}
+
+
+make_table = function(d) {
+  if ("sf" %in% class(d)) {
+    d = d %>%
+      as_tibble() %>%
+      select(-geometry)
+  }
+  
+  d %>%
+    reactable(
+      defaultSorted    = "10-year % Change",
+      defaultSortOrder = "asc",
+      filterable       = TRUE,
+      columns          = list(
+        `K-12 Enrollment, 2012-13` = colDef(format = colFormat(separators = TRUE)),
+        `K-12 Enrollment, 2022-23` = colDef(format = colFormat(separators = TRUE)),
+        `10-year Change`           = colDef(format = colFormat(separators = TRUE)),
+        `10-year % Change`         = colDef(
+          format = colFormat(percent = TRUE, digits = 2)
+        )
+      )
+    )
+}
+
+
+make_map = function(d) {
+  d %>%
+    ggplot() +
+    geom_sf(aes(fill = `10-year % Change`), color = "black") +
+    scale_fill_gradient2(low = "red", high = "blue", labels = scales::percent) +
+    theme_void()
+}
+```
+
+School enrollment is [falling in New Jersey](https://www.app.com/story/news/education/education-trends/2023/10/10/students-nj-public-school-enrollment-drops/70964164007/). In this post, I'll break down NJ's K-12 enrollment trends by county and school district using the NJ Department of Education's [Fall Enrollment Reports](https://www.nj.gov/education/doedata/enr/), as official a source as it gets. I'll show you *what* is happening to enrollment, but not *why* it's happening (beyond brief speculation). Answering *why* would require much more space and effort, and it's a bit beyond my pay grade.
+
+Unfortunately, there's no single spreadsheet with data for every year, so [I made one](https://github.com/SteadyGiant/nj-schools). Feel free to use it as you please. NJ really needs to prioritize high quality public data, because its [open data site](https://data.nj.gov/) leaves a lot to be desired.
+
+Please note that in this post **I exclude pre-school enrollment**. Most school districts in NJ don't offer Pre-K, and many that do only recently started. Comparing enrollment in a district with Pre-K to one without would be bad. Looking at a district's enrollment over time, it'd be unclear *why* it grew: Because of more kids, or because they added a grade?
+
+Also note that **I include charter schools** that report their enrollment to NJ DOE. For brevity, I'll refer to all schools here as "public schools," so just remember that I don't just mean traditional public schools, but all publicly *funded* schools.
+
+Finally, you might notice decimals in the enrollment counts because they're full-time equivalent. A half-day kindergartner is counted as 0.5 full-time students.
+
+# State
+
+New Jersey is gaining people but losing kids. Our overall population [grew](https://en.wikipedia.org/wiki/New_Jersey#Population) 5.7% from 2010 to 2020, according to the US Census, but our number of school-age children (5-17 years old) [fell](https://public.tableau.com/shared/NNQXS9XKG?:display_count=n&:origin=viz_share_link&:embed=y) 1.2%. To wit, public K-12 enrollment shrank by 2.8%, almost 38,000 kids, over the last 10 academic years since Fall 2012. And as a sign of things to come, NJ's number of kids under 5 years old [fell](https://public.tableau.com/shared/PGC7B5N4T?:display_count=n&:origin=viz_share_link&:embed=y) 7.2%. (Note: This group shrank in all states but one.)
+
+[![](census_age_5_17.png)](https://public.tableau.com/shared/25Q5C46BH?:display_count=n&:origin=viz_share_link&:embed=y)
+
+[![](census_age_under_5.png)](https://public.tableau.com/shared/FS2DSYYRF?:display_count=n&:origin=viz_share_link&:embed=y)
+
+```{r}
+
+start = st_yr %>%
+  filter(`Academic Year` == "2012-13") %>%
+  pull(`K-12 Enrollment`)
+
+end = st_yr %>%
+  filter(`Academic Year` == "2019-20") %>%
+  pull(`K-12 Enrollment`)
+
+chg     = start - end
+pct_chg = chg / start
+```
+
+Breaking enrollment down by year, we see it fell even before the Pandemic, albeit very slowly. From Fall 2012 to Fall 2019, we lost `r comma(chg)` K-12 kids, a mere `r percent(pct_chg)` drop with minuscule ups and downs in between. The Pandemic year, 2020-21, of course, saw the largest enrollment drop, and we still haven't recovered.
+
+```{r}
+
+st_yr %>%
+  make_chart() +
+  labs(title = "New Jersey's public K-12 enrollment shrank a bit over 10 years")
+```
+
+```{r}
+st_yr %>%
+  reactable(
+    defaultSorted   = "Academic Year",
+    defaultPageSize = nrow(.),
+    filterable      = TRUE,
+    columns         = list(
+      `K-12 Enrollment` = colDef(format = colFormat(separators = TRUE)),
+      Change            = colDef(format = colFormat(separators = TRUE)),
+      `% Change`        = colDef(
+        format = colFormat(percent = TRUE, digits = 1)
+      ),
+      `10-year Change`   = colDef(format = colFormat(separators = TRUE)),
+      `10-year % Change` = colDef(
+        format = colFormat(percent = TRUE, digits = 2)
+      )
+    )
+  )
+```
+
+I don't have private or home school data, so I can't tell exactly how much of the public school enrollment decline is due to that versus [other trends](https://www.chalkbeat.org/2023/2/9/23591903/school-enrollment-data-decline-covid-attendance/) like falling birth rates, migration, dropouts, and Kindergarten opt-outs. In any case, you'll hear a lot about certain private schools growing a lot, but even if private and home schools didn't exist, NJ's public school enrollment would still have fallen. Our state simply has fewer kids in it.
+
+## Sidenote: Homeschooling
+
+According to the Coalition for Responsible Home Education, New Jersey is 1 of just 9 states that don't require parents to notify the government that they're homeschooling, and the only East Coast state to do so. It actually [looks like](https://www.nj.gov/education/safety/nontraditional/faq_homeschool.shtml) parents *are* required to do so under specific, rare circumstances: 1) Their local school district refuses to enroll their kid, or 2) the parent removes an already-enrolled student from *high school*.
+
+No one knows how many kids are homeschooled in NJ; we only have rough [estimates](https://responsiblehomeschooling.org/research/summaries/homeschooling-numbers/) from [surveys](https://www.nber.org/papers/w29262). 22 states assess homeschooled students' academic progress, and most of NJ's neighbors conduct "thorough" assessment; NJ does zero assessment.
+
+In the current session of NJ's state legislature, the only pending bills regarding homeschooling are about [tax credits](https://www.njleg.state.nj.us/bill-search/2020/S1624) and a brief ["Homeschool Parent's Bill of Rights"](https://www.njleg.state.nj.us/bill-search/2022/A3895) that would establish parents "sole authority over the child's curriculum."
+
+Altogether, these facts don't inspire confidence that we're conducting basic oversight of homeschooling in NJ. Here's a homeschool graduate on her experience of moving from Pennsylvania to New Jersey (forgive me for the extra long quote, but it's compelling):
+
+> My kindergarten through eighth grade experience \[in Pennsylvania\] provided me a mostly balanced, interesting, and engaging homeschool program. Every year, we submitted a portfolio to our licensed evaluator.
+>
+> \[...\]
+>
+> In New Jersey, things fell apart. Without oversight, there was no need to think about compiling a portfolio. Without state standards, there was no benchmark for my progress. We still tried to follow the Pennsylvania guidelines for high school \[...\] but no one was there to check up on us or offer help as I entered harder subjects. I spent one entire academic year with my geometry book propped up on my dresser, open to the same page. By this time, our homeschooling friends had sucked us into **a culture that told us girls' education wasn't valuable anyway**, that I should be learning homemaking skills and preparing for a life of obedience to my husband. (We would never have been exposed to these ideas if we hadn't joined a homeschooling group---we were ordinary, moderate Christians when I was in kindergarten.) Homeschooling had become a moral mission for my mother, such that putting me in public or private school was no longer an option---even if it meant I did nothing instead. **My expected graduation date passed and I became suicidal.** I was convinced that I was stupid and a failure for not being able to teach myself geometry or chemistry out of a book.
+>
+> \~ [Caitlin T.](https://responsiblehomeschooling.org/caitlin-t-s-thoughts/) \[Coalition for Responsible Home Education\]
+
+It's interesting that we're not considering [a bill of rights for homeschool children](https://responsiblehomeschooling.org/bill-of-rights/), just one for parents. It's as if homeschooling can be abused to dominate, neglect, and abuse kids, so the state might want to provide some protection.
+
+I can't even tell if we have any kind of children's bill of rights in NJ. The State Senate's 2008-09 session had a [bill](https://www.njleg.state.nj.us/bill-search/2008/S2334) that didn't go anywhere. These [law](https://www.camdencountydivorcelawyer.com/new-jersey-childrens-bill-rights/) [firms](https://www.gklegal.com/practices/family-law/new-jersey-children-s-bill-of-rights/) speak as if a codified law exists, but I can't find any legislation. The NJ Department of Children and Families has a [Youth Bill of Rights](https://www.nj.gov/njyrs/documents/BillofRights.pdf) for kids in the foster system, but again, no legislation. Please tell me if I'm wrong.
+
+This "sidenote" almost went longer than the rest of this post, but it's an important topic. For more info, see the Coalition for Responsible Home Education's [policy recommendations](https://responsiblehomeschooling.org/advocacy/policy/) and [John Oliver's segment](https://www.youtube.com/watch?v=lzsZP9o7SlI) on homeschooling.
+
+## Sidenote: Oops
+
+```{r}
+
+start = st_yr %>%
+  filter(`Academic Year` == "2019-20") %>%
+  pull(`K-12 Enrollment`)
+
+end = st_yr %>%
+  filter(`Academic Year` == "2020-21") %>%
+  pull(`K-12 Enrollment`)
+
+chg     = start - end
+pct_chg = chg / start
+```
+
+In 2022 Michael Symons ([now with](https://web.archive.org/web/20231121012345/https://www.njoag.gov/about/leadership/michael-symons-bio/) the NJ Office of the Attorney General) wrote a [piece](https://nj1015.com/where-are-all-the-kids-nj-school-enrollment-falling-in-your-district/) for NJ 101.5 on New Jersey's enrollment trends, but his 2020-21 number seems mistaken. He says state total K-12 enrollment in 2020-21 was 1,297,127, but the NJ DOE's 2020-21 [Fall Enrollment Report](https://www.nj.gov/education/doedata/enr/), his source, says it was `r comma(end)` (in sheet "State" calculate `R21 - R4 - R5`). I also can't replicate his PK-12 number for that year with the same spreadsheet (sheet "State" cell R21).
+
+I'm not trying to blast this guy. Just note that a major news source that you'll find on Google has a suspect number and, as far as I can tell, the Pandemic enrollment plunge wasn't quite as dramatic as their chart looks.
+
+Though two of Symons' numbers are wrong, his point stands. Enrollment fell by `r comma(chg)` (`r percent(pct_chg)`) from Fall 2019 to Fall 2020. That's the biggest drop seen in the last decade, and 2020-21 had our lowest enrollment in 20 years.
+
+# Counties
+
+```{r}
+
+union = co %>%
+  filter(County == "Union") %>%
+  pull(`10-year % Change`)
+```
+
+So New Jersey has fewer kids and lower enrollment. Are any of its counties growing?
+
+Only Union and Middlesex counties grew their public K-12 enrollment. Union in particular showed strong `r percent(union)` growth. Generally, our more rural and exurban counties (those furthest from Philly or NYC) shrank the most.
+
+```{r}
+
+co %>%
+  make_map() +
+  labs(
+    title = "All but 2 NJ counties lost enrollment in the last decade",
+    fill  = paste(
+      "% Change in K-12 Enrollment,", "Fall 2012 to Fall 2022", sep = "\n"
+    ),
+    caption = paste(
+      "Data from NJ DOE",
+      "Map by Glassbro.blog",
+      sep = "\n"
+    )
+  )
+```
+
+```{r}
+
+co %>%
+  make_table()
+```
+
+Keep in mind that while enrollment fell in most counties, population grew in most. Hudson and Ocean counties grew much faster than the state overall, but both lost enrollment.
+
+```{r, include=FALSE}
+
+pop10 = get_decennial(
+  "county", year = 2010, state = "NJ", variables = "P001001"
+) %>%
+  select(GEOID, `Pop. 2010` = value)
+
+pop = get_decennial(
+  "county", year = 2020, state = "NJ", variables = "P1_001N", geometry = TRUE
+) %>%
+  select(GEOID, County = NAME, `Pop. 2020` = value) %>%
+  left_join(pop10, by = "GEOID") %>%
+  mutate(
+    County     = gsub(" County, New Jersey", "", County),
+    Change     = `Pop. 2020` - `Pop. 2010`,
+    `% Change` = Change / `Pop. 2010`
+  ) %>%
+  select(County, `Pop. 2010`, `Pop. 2020`, Change, `% Change`)
+    
+
+rm(pop10)
+```
+
+```{r}
+
+pop %>%
+  rename(`10-year % Change` = `% Change`) %>%
+  make_map() +
+  labs(
+    fill    = paste("Population Change,", "2010-20", sep = "\n"),
+    caption = paste(
+      "Data from US Census",
+      "Charty by glassbro.blog",
+      sep = "\n"
+    )
+  )
+```
+
+```{r}
+
+pop %>%
+  as_tibble() %>%
+  select(-geometry) %>%
+  reactable(
+    defaultSorted    = "% Change",
+    defaultSortOrder = "desc",
+    filterable = TRUE,
+    columns = list(
+      `Pop. 2010` = colDef(format = colFormat(separators = TRUE)),
+      `Pop. 2020` = colDef(format = colFormat(separators = TRUE)),
+      Change      = colDef(format = colFormat(separators = TRUE)),
+      `% Change`  = colDef(format = colFormat(percent = TRUE, digits = 2))
+    )
+  )
+```
+
+I can't help but notice that enrollment grew--or shrank the slowest--in the [Northeast Corridor](https://en.wikipedia.org/wiki/Northeast_Corridor) counties. These are some of our most populous and well-connected areas, and families appear least likely to leave them.
+
+# School Districts
+
+```{r}
+
+sd_charter = sd %>%
+  filter(County == "Charters")
+
+sd_no_charter = sd %>%
+  filter(County != "Charters")
+
+n      = nrow(sd_no_charter)
+grew   = mean(sd_no_charter$`10-year Change` > 0)
+shrank = mean(sd_no_charter$`10-year Change` < 0)
+```
+
+In this section, I'm going to mostly exclude the `r nrow(sd_charter)` charter schools that are considered their own school districts. When I think of a school district, I don't usually think of a single charter school. Instead, I'll display those charters' data at the end. Many vocational and special ed schools are also their own districts, but they're harder to consistently filter out. Forgive me.
+
+`r n` of New Jersey's non-charter school districts had 11 academic years' worth of data (2012-13 to 2022-23). Of those, `r percent(grew)` grew enrollment and `r percent(shrank)` lost enrollment.
+
+Here's how enrollment changed for each district. Under `District` search "County Total" or "State Total" if you want those.
+
+```{r}
+
+sd_no_charter %>%
+  make_table()
+```
+
+Of course, mostly small districts shrank or grew the most, with shore districts in particular shrinking quickly. Beyond those, notable to me are Hoboken, Lindenwold, Plainfield, Collingswood, and Bridgeton for having some of the strongest, double-digit growth. Many rich districts like Millburn, Summit, West Orange, and South Orange-Maplewood shrank, but Princeton and Haddonfield are noteworthy exceptions.
+
+Then there's Camden. In Fall 2012, Camden City School District had almost as many kids as Salem *County* and was one of the largest districts in the state. But in the last 10 years it shrank by more than half, from almost 11,000 students to just over 5,100. Any words I have for this wouldn't be enough, and I'm sure actual educators and families in Camden can speak on it better than me, but I'll just note the obvious: Camden has been, and continues to be, devastated.
+
+Now consider NJ's 10 largest (as of 2022-23) school districts:
+
+```{r}
+
+sd_no_charter %>%
+  filter(!District %in% c("State Total", "County Total")) %>%
+  arrange(desc(`K-12 Enrollment, 2022-23`)) %>%
+  slice(1:10) %>%
+  make_table()
+```
+
+Elizabeth and Edison's school districts saw amazing, double-digit growth. Elizabeth SD is now the 2nd-largest. On the other hand, Toms River SD saw double-digit losses, despite Ocean County's overall population growing faster than the state.
+
+In Fall 2012, Jersey City's school district was NJ's 2nd-largest. Makes sense. JC is our 2nd-largest city. Well, as of Fall 2022, JC SD is NJ's *4th*-largest school district, behind Elizabeth and Paterson SDs, despite Paterson's enrollment also shrinking in that time.
+
+## Sidenote: Charter School Districts
+
+Here they are:
+
+```{r}
+
+sd_charter %>%
+  make_table()
+```
+
+I don't know how a school can have 2 students, but there you go.
+
+# What To Do About It
+
+I imagine many people will conclude from these trends that New Jersey, their county, and/or their town is too expensive for families. Since this is New Jersey, property taxes will get the most blame for our unaffordability. (And remember, property taxes affect renters, too. That's why renters also get a [property tax rebate](https://www.nj.gov/treasury/taxation/anchor/tenant.shtml).) However, I suggest also considering other factors.
+
+If you want rising school enrollment, you need more families to move to your district. Families want adequate and affordable housing, high quality schools, and affordable day care for kids too young for school.
+
+I'll spare you a long housing spiel. There's a nationwide housing shortage and NJ is in high demand. "Adequate" housing for a family means, to me, at least 3 bedrooms (among other things, but that's my baseline). In my experience, it's difficult to find 3-bedroom apartments or condos in high demand areas, and towns suppress the construction of 3-bedroom apartments on purpose.
+
+Not every district in New Jersey provides public pre-school; in fact, most don't, and very few can afford to without state aid. It's up to the state government to prioritize and fund universal pre-school. Contact your state legislators about universal pre-K.
+
+# Future Work
+
+Maybe in a future post I will:
+
+-   Zoom in on a few individual counties and their districts
+
+-   Compare NJ to other states
+
+-   Look back further than 2012
+
+-   Cover pre-school enrollment.
+
+[Official sources](https://nces.ed.gov/fastfacts/display.asp?id=65) say nationwide public school enrollment grew in the 10 academic years between Fall 2011 and Fall 2021, but that includes Pre-K and isn't as recent as the NJ DOE's data.
+
+I'd like to dig into Jersey City's data to figure out exactly what's going on. E.g., did a bunch of new charter districts break away? Did the city lose school-age kids? How many family-sized, 3-bedroom housing units did they build?

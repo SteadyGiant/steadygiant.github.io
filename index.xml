@@ -6,14 +6,14 @@
       version="2.0">
 <channel>
 <title>Glassbro</title>
-<link>glassbro.blog/index.html</link>
-<atom:link href="glassbro.blog/index.xml" rel="self" type="application/rss+xml"/>
+<link>https://glassbro.blog/index.html</link>
+<atom:link href="https://glassbro.blog/index.xml" rel="self" type="application/rss+xml"/>
 <description>Data, Politics, etc.</description>
 <generator>quarto-1.3.450</generator>
 <lastBuildDate>Sun, 03 Dec 2023 05:00:00 GMT</lastBuildDate>
 <item>
   <title>How New Jersey’s K-12 Enrollment Changed</title>
-  <link>glassbro.blog/posts/005_enrollment-2023/index.html</link>
+  <link>https://glassbro.blog/posts/005_enrollment-2023/index.html</link>
   <description><![CDATA[ 
 
 
@@ -29,18 +29,18 @@
 <p>New Jersey is gaining people but losing kids. Our overall population <a href="https://en.wikipedia.org/wiki/New_Jersey#Population">grew</a> 5.7% from 2010 to 2020, according to the US Census, but our number of school-age children (5-17 years old) <a href="https://public.tableau.com/shared/NNQXS9XKG?:display_count=n&amp;:origin=viz_share_link&amp;:embed=y">fell</a> 1.2%. To wit, public K-12 enrollment shrank by 2.8%, almost 38,000 kids, over the last 10 academic years since Fall 2012. And as a sign of things to come, NJ’s number of kids under 5 years old <a href="https://public.tableau.com/shared/PGC7B5N4T?:display_count=n&amp;:origin=viz_share_link&amp;:embed=y">fell</a> 7.2%. (Note: This group shrank in all states but one.)</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="https://public.tableau.com/shared/25Q5C46BH?:display_count=n&amp;:origin=viz_share_link&amp;:embed=y"><img src="glassbro.blog/posts/005_enrollment-2023/census_age_5_17.png" class="img-fluid figure-img"></a></p>
+<p><a href="https://public.tableau.com/shared/25Q5C46BH?:display_count=n&amp;:origin=viz_share_link&amp;:embed=y"><img src="https://glassbro.blog/posts/005_enrollment-2023/census_age_5_17.png" class="img-fluid figure-img"></a></p>
 </figure>
 </div>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="https://public.tableau.com/shared/FS2DSYYRF?:display_count=n&amp;:origin=viz_share_link&amp;:embed=y"><img src="glassbro.blog/posts/005_enrollment-2023/census_age_under_5.png" class="img-fluid figure-img"></a></p>
+<p><a href="https://public.tableau.com/shared/FS2DSYYRF?:display_count=n&amp;:origin=viz_share_link&amp;:embed=y"><img src="https://glassbro.blog/posts/005_enrollment-2023/census_age_under_5.png" class="img-fluid figure-img"></a></p>
 </figure>
 </div>
 <p>Breaking enrollment down by year, we see it fell even before the Pandemic, albeit very slowly. From Fall 2012 to Fall 2019, we lost 7,159 K-12 kids, a mere 1% drop with minuscule ups and downs in between. The Pandemic year, 2020-21, of course, saw the largest enrollment drop, and we still haven’t recovered.</p>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="glassbro.blog/posts/005_enrollment-2023/index_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
+<p><img src="https://glassbro.blog/posts/005_enrollment-2023/index_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <div class="cell">
@@ -81,7 +81,7 @@
 <p>Only Union and Middlesex counties grew their public K-12 enrollment. Union in particular showed strong 5% growth. Generally, our more rural and exurban counties (those furthest from Philly or NYC) shrank the most.</p>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="glassbro.blog/posts/005_enrollment-2023/index_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
+<p><img src="https://glassbro.blog/posts/005_enrollment-2023/index_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <div class="cell">
@@ -94,7 +94,7 @@
 <p>Keep in mind that while enrollment fell in most counties, population grew in most. Hudson and Ocean counties grew much faster than the state overall, but both lost enrollment.</p>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="glassbro.blog/posts/005_enrollment-2023/index_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid" width="672"></p>
+<p><img src="https://glassbro.blog/posts/005_enrollment-2023/index_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <div class="cell">
@@ -168,12 +168,12 @@
 
  ]]></description>
   <category>Education</category>
-  <guid>glassbro.blog/posts/005_enrollment-2023/index.html</guid>
+  <guid>https://glassbro.blog/posts/005_enrollment-2023/index.html</guid>
   <pubDate>Sun, 03 Dec 2023 05:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Cars Make South Jersey Deadly</title>
-  <link>glassbro.blog/posts/004_crashes-2022/index.html</link>
+  <link>https://glassbro.blog/posts/004_crashes-2022/index.html</link>
   <description><![CDATA[ 
 
 
@@ -242,7 +242,7 @@
 <p><br></p>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="glassbro.blog/posts/004_crashes-2022/index_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
+<p><img src="https://glassbro.blog/posts/004_crashes-2022/index_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p><br></p>
@@ -253,13 +253,13 @@
 
  ]]></description>
   <category>Car Hell</category>
-  <guid>glassbro.blog/posts/004_crashes-2022/index.html</guid>
+  <guid>https://glassbro.blog/posts/004_crashes-2022/index.html</guid>
   <pubDate>Sun, 16 Apr 2023 04:00:00 GMT</pubDate>
   <media:content url="https://ccnwordpress.blob.core.windows.net/journal/2018/12/christine-movie-.jpg" medium="image" type="image/jpeg"/>
 </item>
 <item>
   <title>How Not to Rank Transit</title>
-  <link>glassbro.blog/posts/003_how-not-to-rank-transit/index.html</link>
+  <link>https://glassbro.blog/posts/003_how-not-to-rank-transit/index.html</link>
   <description><![CDATA[ 
 
 
@@ -337,12 +337,12 @@
 </ol>
 </section></div> ]]></description>
   <category>Transit</category>
-  <guid>glassbro.blog/posts/003_how-not-to-rank-transit/index.html</guid>
+  <guid>https://glassbro.blog/posts/003_how-not-to-rank-transit/index.html</guid>
   <pubDate>Fri, 13 Jan 2023 05:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Transit Breakdown Rankings: 2021</title>
-  <link>glassbro.blog/posts/002_transit-breakdown-rankings-2021/index.html</link>
+  <link>https://glassbro.blog/posts/002_transit-breakdown-rankings-2021/index.html</link>
   <description><![CDATA[ 
 
 
@@ -369,13 +369,13 @@
 <p>Plotting this data clarifies things. (Reference lines are averages.) The Big 3 commuter rails–Metro-North, the Long Island Rail Road, and NJ Transit–are <em>huge</em>; among them, NJT breaks down the most often, and is less reliable than average.</p>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="glassbro.blog/posts/002_transit-breakdown-rankings-2021/index_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="672"></p>
+<p><img src="https://glassbro.blog/posts/002_transit-breakdown-rankings-2021/index_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>Finally, here are the 10 largest (by miles traveled) commuter rails:</p>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="glassbro.blog/posts/002_transit-breakdown-rankings-2021/index_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
+<p><img src="https://glassbro.blog/posts/002_transit-breakdown-rankings-2021/index_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <table class="table">
@@ -406,14 +406,14 @@
 <p>Note that NJ Transit has 2 records: One for its <em>Purchased Transit</em> (PT) or contracted buses, and one for its <em>Directly Operated</em> (DO) buses. While NJT’s PT buses break down less often, they also drive much less than the DO buses. (And apparently <a href="https://www.northjersey.com/story/news/transportation/2022/04/21/nj-transit-riders-coach-usa-buses-no-show/9461205002/">the PT ones sometimes don’t show up</a>.)</p>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="glassbro.blog/posts/002_transit-breakdown-rankings-2021/index_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
+<p><img src="https://glassbro.blog/posts/002_transit-breakdown-rankings-2021/index_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>It’s not the prettiest picture, but a few things are clear. Like its commuter rail, NJ Transit’s bus system is almost peerlessly large. NJT buses break down more often than average, but do fairly well compared to similarly huge agencies, beating NYC’s MTA, LA’s Metro, Chicago’s CTA, and Philly’s SEPTA. Boston’s MBTA, though relatively smaller, does quite well.</p>
 <p>Focusing on the 10 largest bus systems (again, by miles traveled), NJT comes out on top.</p>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="glassbro.blog/posts/002_transit-breakdown-rankings-2021/index_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
+<p><img src="https://glassbro.blog/posts/002_transit-breakdown-rankings-2021/index_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <table class="table">
@@ -442,13 +442,13 @@
 </div>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="glassbro.blog/posts/002_transit-breakdown-rankings-2021/index_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="672"></p>
+<p><img src="https://glassbro.blog/posts/002_transit-breakdown-rankings-2021/index_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>NJ Transit is hidden in the “Small, Breaky” quadrant. Cutting out the Big ones:</p>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="glassbro.blog/posts/002_transit-breakdown-rankings-2021/index_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
+<p><img src="https://glassbro.blog/posts/002_transit-breakdown-rankings-2021/index_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>We now see NJ Transit reports two light rail groups to the FTA: The Hudson-Bergen LR, which is purchased transit, and a combined record for the directly operated River Line and Newark LRs.</p>
@@ -472,7 +472,7 @@
 <p>Now beyond New Jersey, here are the largest light rail services:</p>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="glassbro.blog/posts/002_transit-breakdown-rankings-2021/index_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="672"></p>
+<p><img src="https://glassbro.blog/posts/002_transit-breakdown-rankings-2021/index_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>LA, Dallas, Portland Oregon, and Denver have great, big light rail. Let’s be like them.</p>
@@ -495,21 +495,21 @@
 <p>Plotting it:</p>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="glassbro.blog/posts/002_transit-breakdown-rankings-2021/index_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid" width="672"></p>
+<p><img src="https://glassbro.blog/posts/002_transit-breakdown-rankings-2021/index_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>We see just how peerlessly massive the NYC subway is. It breaks down as often as much smaller systems, but I’m not sure this is a fair comparison. In any case, Washington state’s WMATA is great; SEPTA, San Francisco’s BART, and PATH are good; and Chicago’s CTA is bad. PATCO is hidden in the Small and Breaky cluster.</p>
 <p>Zooming in on Small ones:</p>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="glassbro.blog/posts/002_transit-breakdown-rankings-2021/index_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid" width="672"></p>
+<p><img src="https://glassbro.blog/posts/002_transit-breakdown-rankings-2021/index_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>Now we see PATCO. For all the <a href="https://www.youtube.com/watch?v=Z5-mVy1KP70">praise PATCO rightfully gets</a> in other areas, it breaks down more often than the similarly sized Maryland TA and the bigger LA Metro.</p>
 <p>Finally, here are the 10 biggest heavy rail systems:</p>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="glassbro.blog/posts/002_transit-breakdown-rankings-2021/index_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid" width="672"></p>
+<p><img src="https://glassbro.blog/posts/002_transit-breakdown-rankings-2021/index_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>Across the Delaware from PATCO, SEPTA is both much bigger and more reliable, so I believe PATCO can improve.</p>
@@ -556,13 +556,13 @@
 </ol>
 </section></div> ]]></description>
   <category>Transit</category>
-  <guid>glassbro.blog/posts/002_transit-breakdown-rankings-2021/index.html</guid>
+  <guid>https://glassbro.blog/posts/002_transit-breakdown-rankings-2021/index.html</guid>
   <pubDate>Thu, 12 Jan 2023 05:00:00 GMT</pubDate>
   <media:content url="https://preview.redd.it/we-salute-our-conductors-in-blue-v0-9g7fh32judqa1.png?auto=webp&amp;s=43b2bc8b63a0f55a8e3a05bca96f833a9164d1d2" medium="image"/>
 </item>
 <item>
   <title>Working with the National Transit Database</title>
-  <link>glassbro.blog/posts/001_intro-ntd/index.html</link>
+  <link>https://glassbro.blog/posts/001_intro-ntd/index.html</link>
   <description><![CDATA[ 
 
 
@@ -1575,7 +1575,7 @@ font-style: inherit;">kable</span>()</span></code></pre></div>
 </section></div> ]]></description>
   <category>Transit</category>
   <category>R</category>
-  <guid>glassbro.blog/posts/001_intro-ntd/index.html</guid>
+  <guid>https://glassbro.blog/posts/001_intro-ntd/index.html</guid>
   <pubDate>Wed, 11 Jan 2023 05:00:00 GMT</pubDate>
   <media:content url="https://www.transit.dot.gov/sites/fta.dot.gov/files/NTD_LineGraph.jpg" medium="image" type="image/jpeg"/>
 </item>

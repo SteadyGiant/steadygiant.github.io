@@ -3,9 +3,9 @@ draft: false
 title: "How New Jersey's K-12 Enrollment Changed"
 date: "2023-12-03"
 # date-modified: ""
+image: "https://static.wikia.nocookie.net/flapjack/images/e/e0/Vlcsnap-2018-08-17-13h54m39s525.png/revision/latest?cb=20180817205512"
+image-alt: "The title card for the Marvelous Misadventures of Flapjack, season 1, episode 5, first half: An apple drawn in chalk with the word 'skooled' inside."
 categories: [Education]
-image: "https://static.wikia.nocookie.net/flapjack/images/e/e0/Vlcsnap-2018-08-17-13h54m39s525.png/revision/latest/scale-to-width-down/350?cb=20180817205512"
-image-alt: "A cartoon apple with the word 'skooled' inside. From the Marvelous Misadventures of Flapjack, season 1, episode 5."
 execute:
   echo: false
   error: false
@@ -182,7 +182,7 @@ make_chart = function(d) {
     scale_y_continuous(labels = scales::comma) +
     labs(
       caption = paste(
-        "Data from NJ Dept of Ed",
+        "Data from NJ DOE",
         "Chart by glassbro.blog",
         sep = "\n"
       )
@@ -224,9 +224,9 @@ make_map = function(d) {
 }
 ```
 
-School enrollment is [falling in New Jersey](https://www.app.com/story/news/education/education-trends/2023/10/10/students-nj-public-school-enrollment-drops/70964164007/). In this post, I'll break down NJ's K-12 enrollment trends by county and school district using the NJ Department of Education's [Fall Enrollment Reports](https://www.nj.gov/education/doedata/enr/), as official a source as it gets. I'll show you *what* is happening to enrollment, but not *why* it's happening (beyond brief speculation). Answering *why* would require much more space and effort, and it's a bit beyond my pay grade.
+School enrollment is [falling in New Jersey](https://www.app.com/story/news/education/education-trends/2023/10/10/students-nj-public-school-enrollment-drops/70964164007/). In this post, I'll break down NJ's K-12 enrollment trends by county and school district using the NJ Department of Education's [Fall Enrollment Reports](https://www.nj.gov/education/doedata/enr/), as official a source as it gets. I'll show you *what* is happening to enrollment, but not *why* it's happening (beyond brief speculation). Answering *why* would require much more space and effort.
 
-Unfortunately, there's no single spreadsheet with data for every year, so [I made one](https://github.com/SteadyGiant/nj-schools). Feel free to use it as you please. NJ really needs to prioritize high quality public data, because its [open data site](https://data.nj.gov/) leaves a lot to be desired.
+Unfortunately, there's no single spreadsheet with data for every year, so [I made one](https://github.com/SteadyGiant/nj-schools). NJ really needs to prioritize high quality public data, because its [open data site](https://data.nj.gov/) leaves a lot to be desired.
 
 Please note that in this post **I exclude pre-school enrollment**. Most school districts in NJ don't offer Pre-K, and many that do only recently started. Comparing enrollment in a district with Pre-K to one without would be bad. Looking at a district's enrollment over time, it'd be unclear *why* it grew: Because of more kids, or because they added a grade?
 
@@ -303,11 +303,13 @@ Altogether, these facts don't inspire confidence that we're conducting basic ove
 >
 > In New Jersey, things fell apart. Without oversight, there was no need to think about compiling a portfolio. Without state standards, there was no benchmark for my progress. We still tried to follow the Pennsylvania guidelines for high school \[...\] but no one was there to check up on us or offer help as I entered harder subjects. I spent one entire academic year with my geometry book propped up on my dresser, open to the same page. By this time, our homeschooling friends had sucked us into **a culture that told us girls' education wasn't valuable anyway**, that I should be learning homemaking skills and preparing for a life of obedience to my husband. (We would never have been exposed to these ideas if we hadn't joined a homeschooling group---we were ordinary, moderate Christians when I was in kindergarten.) Homeschooling had become a moral mission for my mother, such that putting me in public or private school was no longer an option---even if it meant I did nothing instead. **My expected graduation date passed and I became suicidal.** I was convinced that I was stupid and a failure for not being able to teach myself geometry or chemistry out of a book.
 >
-> \~ [Caitlin T.](https://responsiblehomeschooling.org/caitlin-t-s-thoughts/) \[Coalition for Responsible Home Education\]
+> \[Emphasis mine.\]
+>
+> \~ [Caitlin T.](https://responsiblehomeschooling.org/caitlin-t-s-thoughts/) via the Coalition for Responsible Home Education
 
-It's interesting that we're not considering [a bill of rights for homeschool children](https://responsiblehomeschooling.org/bill-of-rights/), just one for parents. It's as if homeschooling can be abused to dominate, neglect, and abuse kids, so the state might want to provide some protection.
+It's interesting that we're not considering [a bill of rights for homeschool children](https://responsiblehomeschooling.org/bill-of-rights/), just one for parents. It's as if homeschooling can be abused to dominate and neglect kids, so the state might want to protect children somewhat.
 
-I can't even tell if we have any kind of children's bill of rights in NJ. The State Senate's 2008-09 session had a [bill](https://www.njleg.state.nj.us/bill-search/2008/S2334) that didn't go anywhere. These [law](https://www.camdencountydivorcelawyer.com/new-jersey-childrens-bill-rights/) [firms](https://www.gklegal.com/practices/family-law/new-jersey-children-s-bill-of-rights/) speak as if a codified law exists, but I can't find any legislation. The NJ Department of Children and Families has a [Youth Bill of Rights](https://www.nj.gov/njyrs/documents/BillofRights.pdf) for kids in the foster system, but again, no legislation. Please tell me if I'm wrong.
+I can't even tell if we have *any* kind of children's bill of rights in NJ. The State Senate's 2008-09 session had a [bill](https://www.njleg.state.nj.us/bill-search/2008/S2334) that didn't go anywhere. These [law](https://www.camdencountydivorcelawyer.com/new-jersey-childrens-bill-rights/) [firms](https://www.gklegal.com/practices/family-law/new-jersey-children-s-bill-of-rights/) speak as if a codified law exists, but I can't find any approved legislation. The NJ Department of Children and Families has a [Youth Bill of Rights](https://www.nj.gov/njyrs/documents/BillofRights.pdf) for kids in the foster system, but again, no legislation. Please tell me if I'm wrong.
 
 This "sidenote" almost went longer than the rest of this post, but it's an important topic. For more info, see the Coalition for Responsible Home Education's [policy recommendations](https://responsiblehomeschooling.org/advocacy/policy/) and [John Oliver's segment](https://www.youtube.com/watch?v=lzsZP9o7SlI) on homeschooling.
 
@@ -400,10 +402,11 @@ pop %>%
   rename(`10-year % Change` = `% Change`) %>%
   make_map() +
   labs(
+    title   = "Population grew in all but a few counties",
     fill    = paste("Population Change,", "2010-20", sep = "\n"),
     caption = paste(
-      "Data from US Census",
-      "Charty by glassbro.blog",
+      "Data from the US Census",
+      "Map by glassbro.blog",
       sep = "\n"
     )
   )
@@ -489,11 +492,13 @@ I don't know how a school can have 2 students, but there you go.
 
 # What To Do About It
 
-I imagine many people will conclude from these trends that New Jersey, their county, and/or their town is too expensive for families. Since this is New Jersey, property taxes will get the most blame for our unaffordability. (And remember, property taxes affect renters, too. That's why renters also get a [property tax rebate](https://www.nj.gov/treasury/taxation/anchor/tenant.shtml).) However, I suggest also considering other factors.
+I imagine many people will conclude from these trends that New Jersey, their county, and/or their town is too expensive for families. Since this is New Jersey, property taxes will get the most blame for our unaffordability. (And remember, property taxes affect renters, too. That's why renters also get a [property tax rebate](https://www.nj.gov/treasury/taxation/anchor/tenant.shtml).) However, I suggest also considering factors beyond taxes.
 
-If you want rising school enrollment, you need more families to move to your district. Families want adequate and affordable housing, high quality schools, and affordable day care for kids too young for school.
+If you want rising school enrollment, you need more families to move to your district. Families want adequate and affordable housing, high quality schools, and affordable day care for kids too young for school. The latter two require adequate budgets; the first can [help stabilize taxes](https://www.strongtowns.org/journal/2020/4/16/when-apartment-dwellers-subsidize-suburban-homeowners).
 
-I'll spare you a long housing spiel. There's a nationwide housing shortage and NJ is in high demand. "Adequate" housing for a family means, to me, at least 3 bedrooms (among other things, but that's my baseline). In my experience, it's difficult to find 3-bedroom apartments or condos in high demand areas, and towns suppress the construction of 3-bedroom apartments on purpose.
+I'll spare you a long housing spiel. There's a nationwide housing shortage and NJ is in high demand. "Adequate" housing for a family means, to me, at least 3 bedrooms. In my experience, it's difficult to find apartments or condos of this size in high demand areas. Towns suppress the construction of 3-bedroom apartments on purpose because certain residents *want* lower enrollment out of a shortsighted desire for low taxes and low density.[^1] On the other hand, single-family houses are scarce and have [fiscal](https://www.youtube.com/watch?v=7Nw6qyyrTeI) and [environmental](https://www.youtube.com/watch?v=SfsCniN7Nsc) issues.
+
+[^1]: In my experience, such residents tend to also express or support less coherent beliefs about cities, crime, drugs, "Section 8 housing," and the sun getting blocked by low-rise buildings. These usually stem from a lack of experience with the outside world or a doomed desire to isolate from it.
 
 Not every district in New Jersey provides public pre-school; in fact, most don't, and very few can afford to without state aid. It's up to the state government to prioritize and fund universal pre-school. Contact your state legislators about universal pre-K.
 
@@ -509,6 +514,12 @@ Maybe in a future post I will:
 
 -   Cover pre-school enrollment.
 
+-   Map enrollment change by school district? It'd be huge and interactive by necessity.
+
 [Official sources](https://nces.ed.gov/fastfacts/display.asp?id=65) say nationwide public school enrollment grew in the 10 academic years between Fall 2011 and Fall 2021, but that includes Pre-K and isn't as recent as the NJ DOE's data.
 
 I'd like to dig into Jersey City's data to figure out exactly what's going on. E.g., did a bunch of new charter districts break away? Did the city lose school-age kids? How many family-sized, 3-bedroom housing units did they build?
+
+------------------------------------------------------------------------
+
+*The thumbnail for this post comes from the Marvelous Misadventures of Flapjack, season 1, episode 5, first half, accessed from the [Flapjack Wiki](https://flapjack.fandom.com/wiki/Skooled).*

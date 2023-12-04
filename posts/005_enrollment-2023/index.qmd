@@ -3,8 +3,6 @@ draft: false
 title: "How New Jersey's K-12 Enrollment Changed"
 date: "2023-12-03"
 # date-modified: ""
-image: "https://static.wikia.nocookie.net/flapjack/images/e/e0/Vlcsnap-2018-08-17-13h54m39s525.png/revision/latest?cb=20180817205512"
-image-alt: "The title card for the Marvelous Misadventures of Flapjack, season 1, episode 5, first half: An apple drawn in chalk with the word 'skooled' inside."
 categories: [Education]
 execute:
   echo: false
@@ -496,11 +494,9 @@ I imagine many people will conclude from these trends that New Jersey, their cou
 
 If you want rising school enrollment, you need more families to move to your district. Families want adequate and affordable housing, high quality schools, and affordable day care for kids too young for school. The latter two require adequate budgets; the first can [help stabilize taxes](https://www.strongtowns.org/journal/2020/4/16/when-apartment-dwellers-subsidize-suburban-homeowners).
 
-I'll spare you a long housing spiel. There's a nationwide housing shortage and NJ is in high demand. "Adequate" housing for a family means, to me, at least 3 bedrooms. In my experience, it's difficult to find apartments or condos of this size in high demand areas. Towns suppress the construction of 3-bedroom apartments on purpose because certain residents *want* lower enrollment out of a shortsighted desire for low taxes and low density.[^1] On the other hand, single-family houses are scarce and have [fiscal](https://www.youtube.com/watch?v=7Nw6qyyrTeI) and [environmental](https://www.youtube.com/watch?v=SfsCniN7Nsc) issues.
+I'll spare you a long housing spiel. There's a nationwide housing shortage and NJ is in high demand. "Adequate" housing for a family means, to me, at least 3 bedrooms. In my experience, it's difficult to find apartments or condos of this size in high demand areas. Towns suppress the construction of 3-bedroom apartments on purpose because certain residents *want* lower enrollment out of a shortsighted desire for low taxes and low density. On the other hand, single-family houses are scarce and have [fiscal](https://www.youtube.com/watch?v=7Nw6qyyrTeI) and [environmental](https://www.youtube.com/watch?v=SfsCniN7Nsc) issues.
 
-[^1]: In my experience, such residents tend to also express or support less coherent beliefs about cities, crime, drugs, "Section 8 housing," and the sun getting blocked by low-rise buildings. These usually stem from a lack of experience with the outside world or a doomed desire to isolate from it.
-
-Not every district in New Jersey provides public pre-school; in fact, most don't, and very few can afford to without state aid. It's up to the state government to prioritize and fund universal pre-school. Contact your state legislators about universal pre-K.
+Most districts don't provide pre-school, and few can afford to without state aid. It's up to the state to prioritize and fund universal pre-school. To their credit the Murphy administration [is working](https://newjerseymonitor.com/briefs/new-jersey-will-spend-25m-to-expand-free-full-day-preschool-by-january/) toward a goal of tuition-free, public pre-school for all 3- and 4-year olds.
 
 # Future Work
 
@@ -519,7 +515,3 @@ Maybe in a future post I will:
 [Official sources](https://nces.ed.gov/fastfacts/display.asp?id=65) say nationwide public school enrollment grew in the 10 academic years between Fall 2011 and Fall 2021, but that includes Pre-K and isn't as recent as the NJ DOE's data.
 
 I'd like to dig into Jersey City's data to figure out exactly what's going on. E.g., did a bunch of new charter districts break away? Did the city lose school-age kids? How many family-sized, 3-bedroom housing units did they build?
-
-------------------------------------------------------------------------
-
-*The thumbnail for this post comes from the Marvelous Misadventures of Flapjack, season 1, episode 5, first half, accessed from the [Flapjack Wiki](https://flapjack.fandom.com/wiki/Skooled).*

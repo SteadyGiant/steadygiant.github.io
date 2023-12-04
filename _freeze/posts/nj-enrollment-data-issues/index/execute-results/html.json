@@ -1,0 +1,14 @@
+{
+  "hash": "802bd7860622837ab2787c1f4a0581b8",
+  "result": {
+    "markdown": "---\ndraft: true\ntitle: \"New Jersey's School Enrollment Reports Have An Issue\"\ndate: \"2023-12-00\"\n# date-modified: \"\"\ncategories: [Education]\nimage: \"\"\nimage-alt: \"\"\nexecute:\n  echo: false\n  error: false\n  message: false\n  warning: false\n---\n\n\n\n\nEvery Spring, the New Jersey Department of Education releases a [Fall Enrollment Report](https://www.nj.gov/education/doedata/enr/) for the current academic year. Each report is an Excel workbook\n\nYou shouldn't use the \"School\" sheet in any of these workbooks.\n\nI asked the DOE about this:\n\n> Why does grand total enrollment in the School sheet not equal total enrollment in the State sheet?\n>\n> E.g., in the 2022-23 Fall enrollment report, in the School sheet SUM(G4:G2514) is 1,350,762. But in the State sheet total enrollment for all grades (AH21) is 1,371,921.\n\nTheir response:\n\n> If a student record was in error, we may not have been able to place them in the correct school but we do still count that student in the state total.\n\nThis means perhaps 21,159 (2% of) student records couldn't be attributed to their correct school in the report.\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

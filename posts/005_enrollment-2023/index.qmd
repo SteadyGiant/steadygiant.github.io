@@ -4,8 +4,8 @@ title: "How New Jersey's K-12 Enrollment Changed"
 date: "2023-12-03"
 # date-modified: ""
 categories: [Education]
-image: ""
-image-alt: ""
+image: "https://static.wikia.nocookie.net/flapjack/images/e/e0/Vlcsnap-2018-08-17-13h54m39s525.png/revision/latest/scale-to-width-down/350?cb=20180817205512"
+image-alt: "A cartoon apple with the word 'skooled' inside. From the Marvelous Misadventures of Flapjack, season 1, episode 5."
 execute:
   echo: false
   error: false

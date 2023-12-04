@@ -6,14 +6,14 @@
       version="2.0">
 <channel>
 <title>Glassbro</title>
-<link>https://SteadyGiant.github.io/steadygiant.github.io/index.html#category=R</link>
-<atom:link href="https://SteadyGiant.github.io/steadygiant.github.io/index-r.xml" rel="self" type="application/rss+xml"/>
+<link>glassbro.blog/index.html#category=R</link>
+<atom:link href="glassbro.blog/index-r.xml" rel="self" type="application/rss+xml"/>
 <description>Data, Politics, etc.</description>
 <generator>quarto-1.3.450</generator>
 <lastBuildDate>Wed, 11 Jan 2023 05:00:00 GMT</lastBuildDate>
 <item>
   <title>Working with the National Transit Database</title>
-  <link>https://SteadyGiant.github.io/steadygiant.github.io/posts/001_intro-ntd/index.html</link>
+  <link>glassbro.blog/posts/001_intro-ntd/index.html</link>
   <description><![CDATA[ 
 
 
@@ -1026,7 +1026,7 @@ font-style: inherit;">kable</span>()</span></code></pre></div>
 </section></div> ]]></description>
   <category>Transit</category>
   <category>R</category>
-  <guid>https://SteadyGiant.github.io/steadygiant.github.io/posts/001_intro-ntd/index.html</guid>
+  <guid>glassbro.blog/posts/001_intro-ntd/index.html</guid>
   <pubDate>Wed, 11 Jan 2023 05:00:00 GMT</pubDate>
   <media:content url="https://www.transit.dot.gov/sites/fta.dot.gov/files/NTD_LineGraph.jpg" medium="image" type="image/jpeg"/>
 </item>

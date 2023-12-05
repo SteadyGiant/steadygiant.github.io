@@ -4,7 +4,7 @@
     "href": "about.html",
     "title": "About",
     "section": "",
-    "text": "Who\nI’m a data programmer and wannabe writer.\n\n\nWhat\nThis is a blog about my interests: Tech, politics, social science, books, video games, whatever.\nEverything is political, and my writing acknowledges this. I live in New Jersey, so I tend to zoom in on issues here and, of course, Philly and NYC.\nThere’s no such thing as an unbiased perspective. Everyone and every thing you read is biased. I don’t try to hide mine.\n\n\nHow\nFor anyone interested, I built this website with Quarto because I want to include interactive data visualizations and code output from multiple languages in my posts. I mostly use R and Python, but I’ll check out others.\nFor data visualization, I usually use ggplot2 for static charts and maps, Plotly for interactive charts, Leaflet for interactive maps, and React Table for interactive tables."
+    "text": "This is a blog about my interests. I live in New Jersey, so I tend to zoom in on issues around here.\nFor anyone interested, I built this website with Quarto because I want to include interactive graphics and other output from multiple programming languages in my posts. I mostly use R and Python, but I’ll check out others.\nFor data visualization, I usually use ggplot2 for static charts and maps, Plotly for interactive charts, Leaflet for interactive maps, and React Table for interactive tables."
   },
   {
     "objectID": "posts/005_enrollment-2023/index.html",

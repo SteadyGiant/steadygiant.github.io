@@ -1,5 +1,5 @@
 ---
-draft: true
+draft: false
 title: "How New Jersey's K-12 Enrollment Changed"
 date: "2023-12-04"
 # date-modified: ""

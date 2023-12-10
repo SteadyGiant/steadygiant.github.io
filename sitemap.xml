@@ -2,34 +2,38 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://glassbro.blog/about.html</loc>
-    <lastmod>2023-12-05T03:01:16.443Z</lastmod>
+    <lastmod>2023-12-10T01:29:28.064Z</lastmod>
   </url>
   <url>
-    <loc>https://glassbro.blog/posts/005_enrollment-2023/index.html</loc>
-    <lastmod>2023-12-05T03:01:14.256Z</lastmod>
-  </url>
-  <url>
-    <loc>https://glassbro.blog/posts/002_transit-breakdown-rankings-2021/index.html</loc>
-    <lastmod>2023-12-05T03:01:12.993Z</lastmod>
-  </url>
-  <url>
-    <loc>https://glassbro.blog/LICENSE.html</loc>
-    <lastmod>2023-12-05T03:01:10.886Z</lastmod>
-  </url>
-  <url>
-    <loc>https://glassbro.blog/index.html</loc>
-    <lastmod>2023-12-05T03:01:11.546Z</lastmod>
-  </url>
-  <url>
-    <loc>https://glassbro.blog/posts/003_how-not-to-rank-transit/index.html</loc>
-    <lastmod>2023-12-05T03:01:12.356Z</lastmod>
+    <loc>https://glassbro.blog/posts/006_transit-breakdown-rankings-2022/index.html</loc>
+    <lastmod>2023-12-10T01:29:27.044Z</lastmod>
   </url>
   <url>
     <loc>https://glassbro.blog/posts/001_intro-ntd/index.html</loc>
-    <lastmod>2023-12-05T03:01:15.240Z</lastmod>
+    <lastmod>2023-12-10T01:29:25.654Z</lastmod>
+  </url>
+  <url>
+    <loc>https://glassbro.blog/posts/003_how-not-to-rank-transit/index.html</loc>
+    <lastmod>2023-12-10T01:29:21.994Z</lastmod>
+  </url>
+  <url>
+    <loc>https://glassbro.blog/index.html</loc>
+    <lastmod>2023-12-10T01:29:21.117Z</lastmod>
+  </url>
+  <url>
+    <loc>https://glassbro.blog/LICENSE.html</loc>
+    <lastmod>2023-12-10T01:29:20.397Z</lastmod>
+  </url>
+  <url>
+    <loc>https://glassbro.blog/posts/002_transit-breakdown-rankings-2021/index.html</loc>
+    <lastmod>2023-12-10T01:29:22.800Z</lastmod>
+  </url>
+  <url>
+    <loc>https://glassbro.blog/posts/005_enrollment-2023/index.html</loc>
+    <lastmod>2023-12-10T01:29:24.277Z</lastmod>
   </url>
   <url>
     <loc>https://glassbro.blog/posts/004_crashes-2022/index.html</loc>
-    <lastmod>2023-12-05T03:01:16.140Z</lastmod>
+    <lastmod>2023-12-10T01:29:27.687Z</lastmod>
   </url>
 </urlset>

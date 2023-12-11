@@ -2,7 +2,7 @@
 draft: false
 title: "Transit Breakdown Rankings: 2022"
 date: "2023-12-09"
-# date-modified: ""
+date-modified: "2022-12-10"
 image: "https://i.redd.it/ac42kecbm6t91.jpg"
 image-alt: "Someone you know is gay. Someone you know is bi. Someone you know is transgender. Someone you know rides NJ Transit. Maybe even someone you love. Thank before you speak hate."
 categories: [Transit]
@@ -377,22 +377,17 @@ But NJT didn't get here by breaking down less often. It just got less worse than
 
 But imagine if we properly funded this thing! NJ Transit's commuter rail ranks in the middle for breakdown frequency, despite years of capital underinvestment. If you actually want to fix NJT, fund it first.
 
-<table>
-<colgroup>
-<col style="width: 101%" />
-</colgroup>
-<tbody>
-<tr class="odd">
-<td><h2>NJ Transit Commuter Rail Takeaways</h2>
-<ul>
-<li>NJT ranks 13th out of <code>r n</code> for reliability, up from 14th place in 2021.</li>
-<li>Among the 10 largest services, NJT ranks 6th, up from 7th place in 2021.</li>
-<li>NJT breaks down more often than it did in 2021.</li>
-<li>NJT remains much less reliable than the similarly sized Metro-North and LIRR.</li>
-</ul></td>
-</tr>
-</tbody>
-</table>
++-----------------------------------------------------------------------------------+
+| ## NJ Transit Commuter Rail Takeaways                                             |
+|                                                                                   |
+| -   NJT ranks 13th out of 28 for reliability, up from 14th place in 2021.         |
+|                                                                                   |
+| -   Among the 10 largest services, NJT ranks 6th, up from 7th place in 2021.      |
+|                                                                                   |
+| -   NJT breaks down more often than it did in 2021.                               |
+|                                                                                   |
+| -   NJT remains much less reliable than the similarly sized Metro-North and LIRR. |
++-----------------------------------------------------------------------------------+
 
 # Bus
 
@@ -445,20 +440,13 @@ dat %>%
   make_scatter(MODE)
 ```
 
-<table>
-<colgroup>
-<col style="width: 101%" />
-</colgroup>
-<tbody>
-<tr class="odd">
-<td><h2>NJ Transit Bus Takeaways</h2>
-<ul>
-<li>Among the 10 largest bus services, NJTs direct operations are the most reliable.</li>
-<li>Among all bus services, big and small, NJT is still less reliable than average.</li>
-</ul></td>
-</tr>
-</tbody>
-</table>
++-----------------------------------------------------------------------------------------+
+| ## NJ Transit Bus Takeaways                                                             |
+|                                                                                         |
+| -   Among the 10 largest bus services, NJTs direct operations are the most reliable.    |
+|                                                                                         |
+| -   Among all 448 bus services, big and small, NJT is still less reliable than average. |
++-----------------------------------------------------------------------------------------+
 
 # Light Rail
 
@@ -508,21 +496,15 @@ NJ Transit reports two light rail services to the FTA: The Hudson-Bergen LR, whi
 
 The River Line and Newark LR are together now in 18th place out of 22, up 3 places from 2021. Meanwhile, the Hudson-Bergen LR is 15th, up from 17th. They're still among the least reliable, but I'll take improvement.
 
-<table>
-<colgroup>
-<col style="width: 101%" />
-</colgroup>
-<tbody>
-<tr class="odd">
-<td><h2>NJ Transit Light Rail takeaways</h2>
-<ul>
-<li>Both of NJTs LR services rank poorly.</li>
-<li>The Newark LR and River Line together rank 18th most reliable out of <code>n</code> (or 5th least reliable).</li>
-<li>The Hudson-Bergen LR ranks 15th.</li>
-</ul></td>
-</tr>
-</tbody>
-</table>
++------------------------------------------------------------------------------------------------------+
+| ## NJ Transit Light Rail takeaways                                                                   |
+|                                                                                                      |
+| -   Both of NJTs LR services rank poorly.                                                            |
+|                                                                                                      |
+| -   The Newark LR and River Line together rank 18th most reliable out of 22 (or 5th least reliable). |
+|                                                                                                      |
+| -   The Hudson-Bergen LR ranks 15th out of 22.                                                       |
++------------------------------------------------------------------------------------------------------+
 
 ## Feels Bad
 
@@ -623,23 +605,19 @@ dat %>%
   )
 ```
 
-<table>
-<colgroup>
-<col style="width: 101%" />
-</colgroup>
-<tbody>
-<tr class="odd">
-<td><h2>PATH &amp; PATCO takeaways</h2>
-<ul>
-<li>PATH and PATCO got less reliable since 2021.</li>
-<li>PATH is 6th most reliable out of <code>r n</code>, down from 4th place in 2021.</li>
-<li>PATH is still more reliable than average, but still much less so than the similarly sized SEPTA.</li>
-<li>PATCO is the 10th most reliable out of <code>r n</code>.</li>
-<li>PATCO is still less reliable than average, but now more reliable than a similarly sized service.</li>
-</ul></td>
-</tr>
-</tbody>
-</table>
++------------------------------------------------------------------------------------------------------+
+| ## PATH & PATCO takeaways                                                                            |
+|                                                                                                      |
+| -   PATH and PATCO got less reliable since 2021.                                                     |
+|                                                                                                      |
+| -   PATH is 6th most reliable out of 15, down from 4th place in 2021.                                |
+|                                                                                                      |
+| -   PATH is still more reliable than average, but still much less so than the similarly sized SEPTA. |
+|                                                                                                      |
+| -   PATCO is the 10th most reliable out of 15.                                                       |
+|                                                                                                      |
+| -   PATCO is still less reliable than average, but now more reliable than a similarly sized service. |
++------------------------------------------------------------------------------------------------------+
 
 # New Jerseyans: Read This
 

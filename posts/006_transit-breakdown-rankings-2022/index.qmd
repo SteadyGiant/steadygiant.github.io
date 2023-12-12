@@ -232,8 +232,8 @@ make_scatter = function(
   
   if (ref_lines) {
     p = p +
-      geom_hline(yintercept = mean(dat$`Mean Miles Between Breakdowns`)) +
-      geom_vline(xintercept = mean(dat$`Vehicle/Passenger Car Revenue Miles`))
+      geom_hline(yintercept = mean(d$`Mean Miles Between Breakdowns`)) +
+      geom_vline(xintercept = mean(d$`Vehicle/Passenger Car Revenue Miles`))
   }
   
   full_mode_name = expand_mode(mode)
@@ -350,11 +350,13 @@ dat %>%
 
 ## New Jersey Transit
 
-NJ Transit had a mixed year. Although they moved up the reliability rankings, they broke down, on average, about every 130,000 miles, more often than in 2021 (see the "Ranking Changes" table). So NJT got worse, but other services got even worse.
+NJ Transit had a bad year. Although they moved up the reliability rankings, they broke down, on average, about every 130,000 miles, more often than in 2021 (see the "Ranking Changes" table). So NJT got worse, but other services got even worse.
 
-Plotting this, we see that NJT is now considered "Big and Sturdy"[^1]--finally joining its neighbors and similarly sized peers, Metro-North and the LIRR--as its reliability score is just above average. [In 2021](https://glassbro.blog/posts/002_transit-breakdown-rankings-2021/), NJT was "Big and Breaky," so this is a milestone.
+Plotting this, we see that NJT is still considered "Big and Breaky,"[^1] breaking down much more often than its similarly sized peers, Metro-North and the LIRR.[^2]
 
-[^1]: According to my completely made-up definition of *Sturdy*: Breaking down less often than average. And by *Big* I mean it runs more vehicle or passenger car miles in revenue service than average.
+[^1]: According to my completely made-up definition of *Breaky*: Breaking down more often than average. And by *Big* I mean it runs more vehicle or passenger car miles in revenue service than average.
+
+[^2]: A previous version of this post erroneously said NJ Transit was now "Big and Sturdy" because I messed up some code. Sorry about that.
 
 ```{r}
 dat %>%
@@ -363,19 +365,19 @@ dat %>%
       "text", label = "Big, Sturdy", x = 40000000, y = 1250000, color = "darkgreen"
     ) +
     annotate(
-      "text", label = "Small, Sturdy", x = 2500000, y = 1250000, color = "darkgreen"
+      "text", label = "Small, Sturdy", x = 4000000, y = 1250000, color = "darkgreen"
     ) +
     annotate(
       "text", label = "Big, Breaky", x = 40000000, y = -55000, color = "red"
     ) +
     annotate(
-      "text", label = "Small, Breaky", x = 2500000, y = -60000, color = "red"
+      "text", label = "Small, Breaky", x = 4000000, y = -60000, color = "red"
     )
 ```
 
-But NJT didn't get here by breaking down less often. It just got less worse than others. We can say that NJT is making the best of a [bad situation](https://newjerseymonitor.com/2023/05/04/no-dedicated-funding-source-for-nj-transit-this-year-budget-chair-says/)--no dedicated funding source, an impending budget shortfall, raiding its capital budget to fund operations for years, lagging post-Pandemic ridership and fare-box revenue, and the like--but not that it's turning around.
+We could say that NJT is making the best of a [bad situation](https://newjerseymonitor.com/2023/05/04/no-dedicated-funding-source-for-nj-transit-this-year-budget-chair-says/)--[under-funding](https://www.njpp.org/publications/report/getting-back-on-track-fully-fund-nj-transit-by-taxing-big-corporations/#_edn23), a [fiscal cliff](https://newjerseymonitor.com/2023/07/20/no-fare-hikes-in-nj-transits-2-9b-budget-but-fiscal-cliff-still-looms/), raiding its capital budget to fund operations for years--but it's not turning around.
 
-But imagine if we properly funded this thing! NJ Transit's commuter rail ranks in the middle for breakdown frequency, despite years of capital underinvestment. If you actually want to fix NJT, fund it first.
+But imagine if we properly funded this thing! NJ Transit's commuter rail ranks in the middle for breakdown frequency, despite years of capital under-investment. If you actually want to fix NJT, fund it.
 
 +-----------------------------------------------------------------------------------+
 | ## NJ Transit Commuter Rail Takeaways                                             |
@@ -383,6 +385,8 @@ But imagine if we properly funded this thing! NJ Transit's commuter rail ranks i
 | -   NJT ranks 13th out of 28 for reliability, up from 14th place in 2021.         |
 |                                                                                   |
 | -   Among the 10 largest services, NJT ranks 6th, up from 7th place in 2021.      |
+|                                                                                   |
+| -   NJT still breaks down more often than average.                                |
 |                                                                                   |
 | -   NJT breaks down more often than it did in 2021.                               |
 |                                                                                   |
@@ -477,7 +481,15 @@ Curiously, the bigger the light rail service, the more reliable it tends to be. 
 ```{r}
 
 dat %>%
-  make_scatter(MODE, ref_lines = FALSE)
+  make_scatter(MODE, label_big_only = FALSE) +
+  annotate(
+    "text", label = "Big, Sturdy", x = 10000000, y = 25000, color = "darkgreen"
+  ) +
+  annotate(
+    "text", label = "Big, Breaky", x = 10000000, y = 0, color = "darkgreen"
+  ) +
+  annotate("text", label = "Small, Sturdy", x = 2500000, y = 25000, color = "red") +
+  annotate("text", label = "Small, Breaky", x = 2500000, y = 0, color = "red")
 ```
 
 ## Changes Since 2021
@@ -499,7 +511,7 @@ The River Line and Newark LR are together now in 18th place out of 22, up 3 plac
 +------------------------------------------------------------------------------------------------------+
 | ## NJ Transit Light Rail takeaways                                                                   |
 |                                                                                                      |
-| -   Both of NJTs LR services rank poorly.                                                            |
+| -   Both of NJTs LR services rank poorly and break down more often than average.                     |
 |                                                                                                      |
 | -   The Newark LR and River Line together rank 18th most reliable out of 22 (or 5th least reliable). |
 |                                                                                                      |
@@ -508,7 +520,7 @@ The River Line and Newark LR are together now in 18th place out of 22, up 3 plac
 
 ## Feels Bad
 
-Light rail in New Jersey isn't doing well. [Past reporting](https://www.nj.com/news/2021/01/nj-transit-trains-ranked-the-worst-in-the-nation-again.html?outputType=amp) unfortunately, [mistakenly](https://glassbro.blog/posts/003_how-not-to-rank-transit/) praised NJT's light rail services as among the best in the country, so their issues aren't recognized. The Hudson-Bergen Light Rail doesn't actually go to Bergen County, and the *30-year* effort to extend it there just [hit another obstacle](https://www.northjersey.com/story/news/transportation/2023/08/30/nj-transit-hudson-bergen-light-rail-expansion-delayed/70716189007/). The [Glassboro-Camden Line](https://www.glassborocamdenline.com/)'s future is a bit uncertain as it lacks a loud champion in the state legislature and [the NIMBYs are organized](https://www.courierpostonline.com/story/news/local/2023/11/08/election-day-tuesday-2023-public-questions-results-light-rail-school-bonds-board-education-size/71501819007/).
+As you can see, light rail in New Jersey isn't doing well. [Past reporting](https://www.nj.com/news/2021/01/nj-transit-trains-ranked-the-worst-in-the-nation-again.html?outputType=amp) unfortunately, [mistakenly](https://glassbro.blog/posts/003_how-not-to-rank-transit/) praised NJT's light rail services as among the best in the country, so their issues aren't recognized. The Hudson-Bergen Light Rail doesn't actually go to Bergen County, and the *30-year* effort to extend it there just [hit another obstacle](https://www.northjersey.com/story/news/transportation/2023/08/30/nj-transit-hudson-bergen-light-rail-expansion-delayed/70716189007/). The [Glassboro-Camden Line](https://www.glassborocamdenline.com/)'s future is a bit uncertain as it lacks a loud champion in the state legislature and [the NIMBYs are organized](https://www.courierpostonline.com/story/news/local/2023/11/08/election-day-tuesday-2023-public-questions-results-light-rail-school-bonds-board-education-size/71501819007/).
 
 # Heavy Rail
 
@@ -580,12 +592,32 @@ In one year, PATH got much less reliable. In 2021 the average PATH train ran `r 
 
 PATCO also suffered, but less dramatically: Falling from `r comma(patco_start, accuracy = 1)` mean miles between breakdowns in 2021 to `r comma(patco_end, accuracy = 1)` in 2022, a `r percent(patco_pct_chg, accuracy = 0.1)` drop.
 
-As for ranking, PATH is 6th most reliable of all `r n` heavy rail services and 5th among the 10 largest. Not bad. Indeed, when we plot reliability against size, PATH falls into the "Big and Sturdy" upper right quadrant, being more reliable and running more miles than average.
+As for ranking, PATH is 6th most reliable of all `r n` heavy rail services and 5th among the 10 largest. Not bad. Indeed, when we plot reliability against size, PATH falls into the "Small and Sturdy" upper right quadrant, being more reliable and running fewer miles than average.
 
 ```{r}
 
 dat %>%
-  make_scatter(MODE, label_big_only = FALSE)
+  make_scatter(MODE, label_big_only = FALSE) +
+  annotate(
+      "text",
+      label = "Big, Sturdy",
+      x = 200000000,
+      y = 150000,
+      color = "darkgreen"
+    ) +
+    annotate(
+      "text",
+      label = "Small, Sturdy",
+      x = 15000000,
+      y = 150000,
+      color = "darkgreen"
+    ) +
+    annotate(
+      "text", label = "Big, Breaky", x = 200000000, y = 0, color = "red"
+    ) +
+    annotate(
+      "text", label = "Small, Breaky", x = 15000000, y = 0, color = "red"
+  )
 ```
 
 Zooming in on the lower left quadrant of "Small and Breaky" trains, we find PATCO. It's 10th most reliable out of `r n`. But at least it performs better than the similarly sized Maryland Transit Admin.
@@ -602,7 +634,8 @@ dat %>%
     ref_lines = FALSE,
     label_big_only = FALSE,
     not_label_small_breaky = FALSE
-  )
+  ) +
+  annotate("text", label = "Small, Breaky", x = 3500000, y = 40000, color = "red")
 ```
 
 +------------------------------------------------------------------------------------------------------+

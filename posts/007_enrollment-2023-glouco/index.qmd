@@ -1,0 +1,320 @@
+---
+draft: false
+title: "Gloucester County has fewer students"
+date: "2024-03-25"
+# date-modified: ""
+categories: [Education]
+image: ""
+image-alt: ""
+execute:
+  echo: false
+  error: false
+  message: false
+  warning: false
+---
+
+```{r, dependencies}
+library(dplyr)
+library(ggplot2)
+library(glue)
+library(reactable)
+library(readr)
+library(scales)
+library(sf)
+library(tidyr)
+library(tmap)
+```
+
+```{r, data}
+sd_yr = read_csv(
+  "https://raw.githubusercontent.com/SteadyGiant/nj-schools/trunk/data/clean/enrollment_2012-13_2022-23.csv"
+) %>%
+  mutate(NJDOE_ID = paste0(COUNTY_CODE, "-", DISTRICT_CODE)) %>%
+  arrange(NJDOE_ID, YEAR) %>%
+  filter(COUNTY_NAME == "Gloucester") %>%
+  select(
+    NJDOE_ID,
+    `Academic Year`    = YEAR_LONG,
+    District           = DISTRICT_NAME,
+    `K-12 Enrollment`  = K_12_ENROLLMENT,
+    Change             = CHG_TOTAL_ENROLLMENT,
+    `% Change`         = PCT_CHG_TOTAL_ENROLLMENT,
+    `10-year Change`   = CHG_10Y_K_12_ENROLLMENT,
+    `10-year % Change` = PCT_CHG_10Y_K_12_ENROLLMENT
+  )
+
+co_yr = sd_yr %>%
+  filter(District == "County Total") %>%
+  select(-District)
+
+# Includes state, county totals.
+sd = sd_yr %>%
+  filter(`Academic Year` == "2022-23") %>%
+  select(-c(`Academic Year`, Change, `% Change`)) %>%
+  rename(`K-12 Enrollment, 2022-23` = `K-12 Enrollment`) %>%
+  left_join(
+    sd_yr %>%
+      filter(`Academic Year` == "2012-13") %>%
+      select(NJDOE_ID, `K-12 Enrollment, 2012-13` = `K-12 Enrollment`),
+    by = "NJDOE_ID"
+  ) %>%
+  relocate(contains("2012-13"), .before = contains("2022-23")) %>%
+  relocate(contains(" Change"), .after = everything())
+
+# On each linked page, go to "View API Resources" > GeoJSON
+geo_sd = bind_rows(
+  # https://njogis-newjersey.opendata.arcgis.com/datasets/newjersey::school-districts-unified-for-nj-3424/about
+  st_read(
+    "https://services2.arcgis.com/XVOqAjTOJ5P6ngMu/arcgis/rest/services/School_Districts___Unified/FeatureServer/6/query?outFields=*&where=1%3D1&f=geojson",
+    quiet = TRUE
+    ) %>%
+    rename(NJDOE_ID = NJDOE_ID_U),
+  # https://njogis-newjersey.opendata.arcgis.com/datasets/newjersey::school-districts-elementary-for-nj-3424/about
+  st_read(
+    "https://services2.arcgis.com/XVOqAjTOJ5P6ngMu/arcgis/rest/services/School_Districts___Elementary/FeatureServer/4/query?outFields=*&where=1%3D1&f=geojson",
+    quiet = TRUE
+    ) %>%
+    rename(NJDOE_ID = NJDOE_ID_E),
+  # https://njogis-newjersey.opendata.arcgis.com/datasets/newjersey::school-districts-secondary-for-nj-3424/about
+  st_read(
+    "https://services2.arcgis.com/XVOqAjTOJ5P6ngMu/arcgis/rest/services/School_Districts___Secondary/FeatureServer/5/query?outFields=*&where=1%3D1&f=geojson",
+    quiet = TRUE
+    ) %>%
+    rename(NJDOE_ID = NJDOE_ID_S)
+) %>%
+  # GlouCo only.
+  filter(grepl("^15\\-", NJDOE_ID)) %>%
+  mutate(
+    `District Type` = dplyr::case_match(
+      SD_TYPE,
+      "E" ~ "Elementary",
+      "S" ~ "Secondary",
+      "U" ~ "Unified"
+    )
+  ) %>%
+  # geometry retained
+  select(GEOID, NJDOE_ID, `District Type`) %>%
+  # Must right join to retain sf object.
+  right_join(sd, by = "NJDOE_ID") %>%
+  relocate(`District Type`, .before = District)
+
+rm(sd_yr, sd)
+```
+
+```{r, functions}
+make_table = function(d) {
+  if ("sf" %in% class(d)) {
+    d = d %>%
+      as_tibble() %>%
+      select(-geometry)
+  }
+  
+  d %>%
+    select(-ends_with("ID")) %>%
+    reactable(
+      defaultSorted    = "10-year % Change",
+      defaultSortOrder = "asc",
+      filterable       = TRUE,
+      columns          = list(
+        `K-12 Enrollment, 2012-13` = colDef(format = colFormat(separators = TRUE)),
+        `K-12 Enrollment, 2022-23` = colDef(format = colFormat(separators = TRUE)),
+        `10-year Change`           = colDef(format = colFormat(separators = TRUE)),
+        `10-year % Change`         = colDef(
+          format = colFormat(percent = TRUE, digits = 1)
+        )
+      )
+    )
+}
+
+
+make_map = function(d) {
+  d %>%
+    ggplot() +
+    geom_sf(aes(fill = `10-year % Change`), color = "black") +
+    scale_fill_gradient2(low = "red", high = "blue", labels = scales::percent) +
+    theme_void() +
+    labs(
+      fill = paste(
+        "% Change in K-12 Enrollment,", "Fall 2012 to Fall 2022", sep = "\n"
+        ),
+      caption = paste(
+        "Data from NJ DOE",
+        "Map by glassbro.blog",
+        sep = "\n"
+        )
+      )
+}
+
+
+make_chart = function(d) {
+  d %>%
+    ggplot() +
+    geom_col(
+      aes(
+        x = `Academic Year`,
+        y = `K-12 Enrollment`,
+        # FIXME: This actually does the opposite, & uses blue & coral instead.
+        fill = if_else(Change < 0, "green", "red")
+      )
+    ) +
+    theme_minimal() +
+    theme(axis.text.x = element_text(angle = 45, vjust = 1.6, hjust = 1.2)) +
+    scale_y_continuous(labels = scales::comma) +
+    labs(
+      caption = paste(
+        "Data from NJ DOE",
+        "Chart by glassbro.blog",
+        sep = "\n"
+      )
+    ) +
+    guides(fill = "none")
+}
+```
+
+In a [past post](https://glassbro.blog/posts/005_enrollment-2023/), I covered enrollment changes across the state of New Jersey. In this post, I zoom in on Gloucester County and its school districts. Over the last decade, how much did K-12 enrollment change in GlouCo? Which districts saw the greatest gains and losses? These are fairly simple questions, but I don't see them answered elsewhere on the web to my satisfaction. I try to avoid more difficult questions requiring more expertise, like why these changes happened, how they might affect us, or what–if anything–we should do about it.
+
+# Context
+
+First, let's use Census data to compare Gloucester County to New Jersey and the United States at large. The table below recaps how the total and child populations in each of these places changed from 2010 to 2020. Accordingly:
+
+-   Like the US, NJ and Gloucester County's total populations grew, though more slowly;
+
+-   GlouCo's total pop grew more slowly than the rest of NJ's;
+
+-   Unlike the US, NJ's pop of children aged 5-17 years shrank;
+
+-   Like the US, NJ's count of children below the age of 5 shrank, though more slowly.
+
+| Place                 | Population            | \% Change                                                                                            |
+|----------------|----------------|----------------------------------------|
+| US                    | All                   | 7.4% ([source](https://www.census.gov/library/visualizations/2021/dec/2020-percent-change-map.html)) |
+| US                    | Children, 5-17        | 1.3%                                                                                                 |
+| US                    | Children, 5 and below | -8.9%                                                                                                |
+| NJ                    | All                   | 5.7% ([source](https://www.census.gov/library/visualizations/2021/dec/2020-percent-change-map.html)) |
+| NJ                    | Children, 5-17        | -1.2%                                                                                                |
+| NJ                    | Children, 5 and below | -7.2%                                                                                                |
+| Gloucester County, NJ | All                   | 4.9% ([source](https://en.wikipedia.org/wiki/Gloucester_County,_New_Jersey#2020_census))             |
+
+# Gloucester County
+
+```{r}
+co_10y_pct_chg = co_yr %>%
+  filter(`Academic Year` == "2022-23") %>%
+  pull(`10-year % Change`) %>%
+  percent(accuracy = 0.1)
+```
+
+Now let's pivot to the main data source for this post: The NJ Department of Education's annual [Fall enrollment reports](https://www.nj.gov/education/doedata/enr/). These include all publicly funded schools in NJ, including charters. They don't include private schools or homeschoolers.[^1]
+
+[^1]: As far as I know, no one tracks exactly how many kids attend private or home school in NJ. You'll only find rough estimates or breathless headlines about a few private schools growing a lot in certain years.
+
+According to the NJ DOE, GlouCo's K-12 enrollment shrank by `r co_10y_pct_chg` from academic year 2012-13 to 2022-23, the most recent year available at the time of writing.
+
+The below chart shows that, of the 10 academic years on record since 2012-13, GlouCo's enrollment fell in all but 3. We don't see drastic changes from year to year, but slow and steady decline.
+
+```{r}
+co_yr %>%
+  make_chart() +
+  labs(
+    title = "Gloucester County has fewer students",
+    subtitle = glue("Enrollment fell {co_10y_pct_chg} from 2012-13 to 2022-23")
+  )
+```
+
+Below is an interactive table with the entire dataset I'm working with in this post. You can search for your district and compare it to others.
+
+These school districts *shrank* the most (percent) in the last decade (ordered by most shrinkage):
+
+1.  Wenonah
+2.  Pitman
+3.  Greenwich Township
+4.  Glassboro
+5.  Mantua
+
+These districts *grew* the most (ordered by most growth):
+
+1.  GlouCo VoTech
+2.  Kingsway Regional (a high school serving East Greenwich Township, Swedesboro, Woolwich Township, and South Harrison Township)
+3.  Woodbury Heights
+4.  Woodbury
+5.  East Greenwich Township
+
+```{r}
+geo_sd %>%
+  make_table()
+```
+
+You may not have heard of some of these places, or don't quite know where they are, so below is an interactive map of this data (excluding high school districts).[^2][^3] Zoom in to find your town.
+
+[^2]: Newfield is missing because it has no school district; their kids attend K-8 in Franklin Township schools, then Delsea Regional High School.
+
+[^3]: Many thanks to the [NJ Office of GIS](https://njogis-newjersey.opendata.arcgis.com/) for the school district shapefiles!
+
+```{r}
+tmap::tmap_mode("view")
+
+geo_sd %>%
+  filter(`District Type` %in% c("Elementary", "Unified")) %>%
+  tm_shape() +
+  tm_basemap("CartoDB.Voyager") +
+  tm_polygons(
+    "10-year % Change",
+    title = paste(
+      "% Change in K-12 Enrollment", "Fall 2012 to Fall 2022", sep = "<br>"
+    ),
+    id = "District",
+    alpha = 0.6,
+    legend.reverse = TRUE,
+    legend.format = scales::percent,
+    # popup.vars = c(""),
+    popup.format = list(
+      "10-year % Change" = list(fun = scales::percent_format(accuracy = 0.1))
+    )
+  ) +
+  tm_layout(frame = FALSE, legend.outside = TRUE)
+```
+
+Here's a chloropleth that more clearly illustrates the overall trends:
+
+```{r}
+geo_sd %>%
+  filter(`District Type` %in% c("Elementary", "Unified")) %>%
+  make_map() +
+  labs(
+    title    = "Most districts lost enrollment",
+    subtitle = "Gloucester County, NJ, Unified and Elementary school districts",
+    caption = paste(
+      "Note: County total enrollment fell by 6.3%",
+      "",
+      "Data from NJ DOE",
+      "Map by glassbro.blog",
+      sep = "\n"
+    )
+  )
+```
+
+Note that even nice towns like [Pitman](https://www.youtube.com/watch?v=dVeSiWTU74s), wealthy enclaves like Harrison Township (aka Mullica Hill), and "bustling" commercial strips like Washington and Mantua Townships (aka Turnersville and Sewell, respectively), all lost K-12 enrollment in the last decade.
+
+Gloucester County's enrollment shrinking doesn't surprise me because, as we saw in the US Census above, New Jersey's student-age population shrank. What's somewhat surprising is that Gloucester County's overall population *grew* while its enrollment shrank. So we have more people, but fewer kids.
+
+## Sidenote: Chronic Absenteeism
+
+If you follow [national news](https://www.pbs.org/newshour/nation/chronic-absenteeism-is-up-across-the-country-school-leaders-are-trying-to-address-why), you've probably thought about [chronic absenteeism](https://www.vox.com/2024/1/9/23904542/chronic-absenteeism-school-attendance). Post-pandemic, tons of kids just stopped going to school. You may wonder, then, whether this issue is messing with the dataset I'm using here. Are so many districts "shrinking" because tons of kids were absent when they counted? If we made those kids go to school, would a bunch more districts suddenly report enrollment *growth* in the last decade?
+
+Maybe. On the other hand, I wouldn't expect Wenonah, Pitman, Washington Township, or the like to have enough chronically absent students to cover their reported losses. Do you think Pitman has more than 369 kids skipping school?
+
+It's possible that CA plagues this dataset, but I have no proof either way. In any case, we should focus–for now, in this post–on the reported enrollment data, because *that* is what the state uses to determine the aid it sends to each district.
+
+# Why?
+
+I'm not a demographer, and I don't follow the demography literature, so I want to avoid making definitive explanations or take "population numbers at face value and extrapolat\[e\] from there" \[[source](https://wwnorton.com/books/9781324002703)\]. (Instead, perhaps read [this demographer's newsletter](https://jennifersciubba.substack.com/p/why-arent-we-having-babies) or book.) But I *will* mildly batter a claim that often pops up when I mention enrollment data. Then I'll forget all that and make a prediction.
+
+As I said in the past post, I doubt this pattern of falling public K-12 enrollment is primarily caused by more parents turning to private schools or homeschooling en masse. That may affect enrollment in certain areas, but my hunch is that it's of secondary concern compared to demographics. There are simply fewer kids in New Jersey, so enrollment declines across counties and districts are expected. And even revered public school districts in highly sought suburbs like Washington Township (aka Turnersville), Harrison Township (Mullica Hill), Mantua Township (Sewell), and Wenonah shrank. It's unfortunate that we have no official counts of kids attending private or home schools, as this information vacuum often gets filled by over-confident speculators who want to believe that private schools are eating publics' lunch.[^4]
+
+[^4]: As of 2019, public schools enroll the vast majority of kids–even the [vast majority of rich kids](https://www.youtube.com/watch?v=ovwumIpQzIQ), though obviously by a smaller margin. Maybe one day I'll look at updated data, but I don't expect a huge change.
+
+And now my take. Since the country's population of children aged 5 and below recently shrank (see the Census data above), I expect public K-12 enrollment in Gloucester County, NJ to fall at least a bit more for at least a few more years (absent significant lifting of immigration constraints). With that many qualifications, I can't possibly be wrong.
+
+# Future Work
+
+In a future post, I'll zoom in on Glassboro School District and its neighbors, who all (except Clayton) lost enrollment in the last decade, as did Gloucester County and New Jersey overall. I'll try to cover recent news about Glassboro public schools, and look to the future.

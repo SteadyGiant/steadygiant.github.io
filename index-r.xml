@@ -6,15 +6,16 @@
       version="2.0">
 <channel>
 <title>Glassbro</title>
-<link>https://glassbro.blog/index.html#category=R</link>
+<link>https://glassbro.blog/#category=R</link>
 <atom:link href="https://glassbro.blog/index-r.xml" rel="self" type="application/rss+xml"/>
 <description>Data, Politics, etc.</description>
-<generator>quarto-1.3.450</generator>
+<generator>quarto-1.4.550</generator>
 <lastBuildDate>Wed, 11 Jan 2023 05:00:00 GMT</lastBuildDate>
 <item>
   <title>Working with the National Transit Database</title>
-  <link>https://glassbro.blog/posts/001_intro-ntd/index.html</link>
+  <link>https://glassbro.blog/posts/001_intro-ntd/</link>
   <description><![CDATA[ 
+
 
 
 
@@ -1026,7 +1027,7 @@ font-style: inherit;">kable</span>()</span></code></pre></div>
 </section></div> ]]></description>
   <category>Transit</category>
   <category>R</category>
-  <guid>https://glassbro.blog/posts/001_intro-ntd/index.html</guid>
+  <guid>https://glassbro.blog/posts/001_intro-ntd/</guid>
   <pubDate>Wed, 11 Jan 2023 05:00:00 GMT</pubDate>
   <media:content url="https://www.transit.dot.gov/sites/fta.dot.gov/files/NTD_LineGraph.jpg" medium="image" type="image/jpeg"/>
 </item>

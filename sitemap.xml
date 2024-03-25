@@ -2,38 +2,42 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://glassbro.blog/about.html</loc>
-    <lastmod>2023-12-12T16:32:20.444Z</lastmod>
+    <lastmod>2023-12-05T02:59:51.431Z</lastmod>
   </url>
   <url>
     <loc>https://glassbro.blog/posts/006_transit-breakdown-rankings-2022/index.html</loc>
-    <lastmod>2023-12-12T16:32:19.387Z</lastmod>
-  </url>
-  <url>
-    <loc>https://glassbro.blog/posts/001_intro-ntd/index.html</loc>
-    <lastmod>2023-12-12T16:32:18.043Z</lastmod>
-  </url>
-  <url>
-    <loc>https://glassbro.blog/posts/003_how-not-to-rank-transit/index.html</loc>
-    <lastmod>2023-12-12T16:32:14.254Z</lastmod>
-  </url>
-  <url>
-    <loc>https://glassbro.blog/index.html</loc>
-    <lastmod>2023-12-12T16:32:13.077Z</lastmod>
-  </url>
-  <url>
-    <loc>https://glassbro.blog/LICENSE.html</loc>
-    <lastmod>2023-12-12T16:32:12.140Z</lastmod>
-  </url>
-  <url>
-    <loc>https://glassbro.blog/posts/002_transit-breakdown-rankings-2021/index.html</loc>
-    <lastmod>2023-12-12T16:32:15.105Z</lastmod>
+    <lastmod>2023-12-12T16:30:26.663Z</lastmod>
   </url>
   <url>
     <loc>https://glassbro.blog/posts/005_enrollment-2023/index.html</loc>
-    <lastmod>2023-12-12T16:32:16.906Z</lastmod>
+    <lastmod>2023-12-05T02:31:20.418Z</lastmod>
+  </url>
+  <url>
+    <loc>https://glassbro.blog/posts/002_transit-breakdown-rankings-2021/index.html</loc>
+    <lastmod>2023-11-12T15:43:13.687Z</lastmod>
+  </url>
+  <url>
+    <loc>https://glassbro.blog/posts/007_enrollment-2023-glouco/index.html</loc>
+    <lastmod>2024-03-25T13:36:30.474Z</lastmod>
+  </url>
+  <url>
+    <loc>https://glassbro.blog/LICENSE.html</loc>
+    <lastmod>2023-11-12T15:43:13.630Z</lastmod>
+  </url>
+  <url>
+    <loc>https://glassbro.blog/index.html</loc>
+    <lastmod>2023-11-12T15:43:13.684Z</lastmod>
+  </url>
+  <url>
+    <loc>https://glassbro.blog/posts/003_how-not-to-rank-transit/index.html</loc>
+    <lastmod>2023-11-12T15:43:13.687Z</lastmod>
+  </url>
+  <url>
+    <loc>https://glassbro.blog/posts/001_intro-ntd/index.html</loc>
+    <lastmod>2023-11-12T15:43:13.684Z</lastmod>
   </url>
   <url>
     <loc>https://glassbro.blog/posts/004_crashes-2022/index.html</loc>
-    <lastmod>2023-12-12T16:32:20.071Z</lastmod>
+    <lastmod>2023-11-12T15:43:13.687Z</lastmod>
   </url>
 </urlset>

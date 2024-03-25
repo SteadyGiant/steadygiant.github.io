@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.3.450">
+<meta name="generator" content="quarto-1.4.550">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -48,7 +48,13 @@ ul.task-list li input[type="checkbox"] {
   "collapse-after": 3,
   "panel-placement": "end",
   "type": "overlay",
-  "limit": 20,
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
   "language": {
     "search-no-results-text": "No results",
     "search-matching-documents-text": "matching documents",
@@ -57,12 +63,12 @@ ul.task-list li input[type="checkbox"] {
     "search-more-match-text": "more match in this document",
     "search-more-matches-text": "more matches in this document",
     "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
     "search-detached-cancel-button-title": "Cancel",
     "search-submit-button-title": "Submit",
     "search-label": "Search"
   }
 }</script>
-
 <script src="../../site_libs/core-js-2.5.3/shim.min.js"></script>
 <script src="../../site_libs/react-18.2.0/react.min.js"></script>
 <script src="../../site_libs/react-18.2.0/react-dom.min.js"></script>
@@ -78,10 +84,10 @@ ul.task-list li input[type="checkbox"] {
 <body class="nav-fixed fullcontent">
 
 <div id="quarto-search-results"></div>
-  <header id="quarto-header" class="headroom fixed-top">
-    <nav class="navbar navbar-expand-lg navbar-dark ">
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
-      <div class="navbar-brand-container">
+      <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="../../index.html">
     <span class="navbar-title">Glassbro</span>
     </a>
@@ -93,34 +99,34 @@ ul.task-list li input[type="checkbox"] {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
-    <a class="nav-link" href="../../about.html" rel="" target="">
- <span class="menu-text">About</span></a>
+    <a class="nav-link" href="../../about.html"> 
+<span class="menu-text">About</span></a>
   </li>  
   <li class="nav-item compact">
-    <a class="nav-link" href="https://github.com/SteadyGiant" rel="" target=""><i class="bi bi-github" role="img">
+    <a class="nav-link" href="https://github.com/SteadyGiant"> <i class="bi bi-github" role="img">
 </i> 
- <span class="menu-text"></span></a>
+<span class="menu-text"></span></a>
   </li>  
   <li class="nav-item compact">
-    <a class="nav-link" href="https://twitter.com/TheEmGotter" rel="" target=""><i class="bi bi-twitter" role="img">
+    <a class="nav-link" href="https://twitter.com/TheEmGotter"> <i class="bi bi-twitter" role="img">
 </i> 
- <span class="menu-text"></span></a>
+<span class="menu-text"></span></a>
   </li>  
   <li class="nav-item compact">
-    <a class="nav-link" href="https://bsky.app/profile/glassbro.bsky.social" rel="" target=""><i class="bi bi-cloud" role="img">
+    <a class="nav-link" href="https://bsky.app/profile/glassbro.bsky.social"> <i class="bi bi-cloud" role="img">
 </i> 
- <span class="menu-text"></span></a>
+<span class="menu-text"></span></a>
   </li>  
   <li class="nav-item compact">
-    <a class="nav-link" href="../../index.xml" rel="" target=""><i class="bi bi-rss" role="img">
+    <a class="nav-link" href="../../index.xml"> <i class="bi bi-rss" role="img">
 </i> 
- <span class="menu-text"></span></a>
+<span class="menu-text"></span></a>
   </li>  
 </ul>
-            <div class="quarto-navbar-tools">
+          </div> <!-- /navcollapse -->
+          <div class="quarto-navbar-tools">
   <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
 </div>
-          </div> <!-- /navcollapse -->
       </div> <!-- /container-fluid -->
     </nav>
 </header>
@@ -166,6 +172,7 @@ ul.task-list li input[type="checkbox"] {
 
 
 
+
 <p>The FTA just released its <a href="https://www.transit.dot.gov/ntd/data-product/2022-breakdowns"><strong>2022</strong> National Transit Database</a>, so let’s start an annual holiday tradition of ranking transit agencies for breakdown frequency. I’ll also compare the 2022 rankings to my <a href="https://glassbro.blog/posts/002_transit-breakdown-rankings-2021/">2021 rankings</a>, and display my usual extreme New Jersey bias.</p>
 <p>Note: Some services, like NJ Transit Bus, have 2 records: One for Purchased Transit (PT) that’s contracted out, and one for Directly Operated (DO) transit.</p>
 <section id="commuter-rail" class="level1">
@@ -174,7 +181,6 @@ ul.task-list li input[type="checkbox"] {
 <p>Metro-North and the Long Island Railroad (LIRR), running the largest and 2nd-largest CR services, respectively, held onto 3rd and 5th place, respectively. They’re just excellent trains by this standard, especially considering how many miles they travel every year.</p>
 <div class="cell">
 <div class="cell-output-display">
-
 <h1 style="color:#000;background:#FFFFFF;text-align:left;font-size:32px;font-style:normal;font-weight:bold;text-decoration:;letter-spacing:px;word-spacing:px;text-transform:;text-shadow:;margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px">Commuter Rail Reliability Rankings, 2022</h1>
 <div class="reactable html-widget html-fill-item" id="htmlwidget-40fd6394aeaf15aadf36" style="width:auto;height:auto;"></div>
 <p style="color:#000;background:#FFFFFF;text-align:left;font-size:16px;font-style:normal;font-weight:normal;text-decoration:;letter-spacing:px;word-spacing:px;text-transform:;text-shadow:;margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px">Data source: National Transit Database, FTA</p>
@@ -185,7 +191,11 @@ ul.task-list li input[type="checkbox"] {
 <p>Not much changed in these “peer” rankings <a href="https://glassbro.blog/posts/002_transit-breakdown-rankings-2021/">since 2021</a>. Denver’s RTD was in this group in 2021, but they must have severely scaled back operations, because now they’re out and the Maryland Transit Administration is in–and the 2nd-least reliable at that. MBTA and NJ Transit moved up 1 spot, with NJT overtaking California’s Metrolink. SEPTA fell 2 spots to the bottom.</p>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 <section id="changes-since-2021" class="level2">
@@ -194,7 +204,6 @@ ul.task-list li input[type="checkbox"] {
 <p>The 2022 Breaky Award for CR is shared by SEPTA and Penn DOT, who both slid 8 spots down the rankings. Penn DOT in particular fell from 2nd to 10th place! Suburban Pennsylvania commuters had a bad 2022.</p>
 <div class="cell">
 <div class="cell-output-display">
-
 <h1 style="color:#000;background:#FFFFFF;text-align:left;font-size:32px;font-style:normal;font-weight:bold;text-decoration:;letter-spacing:px;word-spacing:px;text-transform:;text-shadow:;margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px">Ranking Changes</h1>
 <div class="reactable html-widget html-fill-item" id="htmlwidget-7a76da4736142a733710" style="width:auto;height:auto;"></div>
 <p style="color:#000;background:#FFFFFF;text-align:left;font-size:16px;font-style:normal;font-weight:normal;text-decoration:;letter-spacing:px;word-spacing:px;text-transform:;text-shadow:;margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px">Data source: National Transit Database, FTA</p>
@@ -208,7 +217,11 @@ ul.task-list li input[type="checkbox"] {
 <p>Plotting this, we see that NJT is still considered “Big and Breaky,”<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> breaking down much more often than its similarly sized peers, Metro-North and the LIRR.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 <p>We could say that NJT is making the best of a <a href="https://newjerseymonitor.com/2023/05/04/no-dedicated-funding-source-for-nj-transit-this-year-budget-chair-says/">bad situation</a>–<a href="https://www.njpp.org/publications/report/getting-back-on-track-fully-fund-nj-transit-by-taxing-big-corporations/#_edn23">under-funding</a>, a <a href="https://newjerseymonitor.com/2023/07/20/no-fare-hikes-in-nj-transits-2-9b-budget-but-fiscal-cliff-still-looms/">fiscal cliff</a>, raiding its capital budget to fund operations for years–but it’s not turning around.</p>
@@ -237,7 +250,6 @@ ul.task-list li input[type="checkbox"] {
 <p>There were 448 bus services in 2022, from the tiny Capital Area Transportation Authority based in Lansing, Michigan, to New York City’s MTA.</p>
 <div class="cell">
 <div class="cell-output-display">
-
 <h1 style="color:#000;background:#FFFFFF;text-align:left;font-size:32px;font-style:normal;font-weight:bold;text-decoration:;letter-spacing:px;word-spacing:px;text-transform:;text-shadow:;margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px">Bus Reliability Rankings, 2022</h1>
 <h1 style="color:#000;background:#FFFFFF;text-align:left;font-size:32px;font-style:normal;font-weight:bold;text-decoration:;letter-spacing:px;word-spacing:px;text-transform:;text-shadow:;margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px"></h1>
 <div class="reactable html-widget html-fill-item" id="htmlwidget-f3f8482383d1e6474478" style="width:auto;height:auto;"></div>
@@ -248,7 +260,11 @@ ul.task-list li input[type="checkbox"] {
 <p>Let’s focus on the 10 largest bus services. Once again, <strong>New Jersey Transit is #1, baby!</strong> <a href="https://glassbro.blog/posts/002_transit-breakdown-rankings-2021/">Compared to 2021</a>, MTA improved remarkably, unseating DC’s WMATA for 2nd place and threatening to overtake NJ Transit next year. Other than Atlanta’s MARTA falling to the bottom behind Chicago’s CTA, nothing else changed here.</p>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 <section id="changes-since-2021-1" class="level2">
@@ -256,7 +272,6 @@ ul.task-list li input[type="checkbox"] {
 <p>Looking at all 448 bus services again, we see mostly smaller concerns made the biggest gains. As for my general area: I never heard of the Bergen County Community Transportation agency based in Hackensack, NJ, but it shot up 232 places in the reliability rankings!</p>
 <div class="cell">
 <div class="cell-output-display">
-
 <h1 style="color:#000;background:#FFFFFF;text-align:left;font-size:32px;font-style:normal;font-weight:bold;text-decoration:;letter-spacing:px;word-spacing:px;text-transform:;text-shadow:;margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px">Ranking Changes</h1>
 <div class="reactable html-widget html-fill-item" id="htmlwidget-24a6abf3d46a5fa631af" style="width:auto;height:auto;"></div>
 <p style="color:#000;background:#FFFFFF;text-align:left;font-size:16px;font-style:normal;font-weight:normal;text-decoration:;letter-spacing:px;word-spacing:px;text-transform:;text-shadow:;margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px">Data source: National Transit Database, FTA</p>
@@ -271,7 +286,11 @@ ul.task-list li input[type="checkbox"] {
 <p>The only thing is, NJT fell in the rankings among <em>all</em> bus services, and it’s still less reliable than average (see the crowded scatter chart below). So while NJT bus beats its similarly sized peers, it’s middling among all bus services, big and small–though I’m not sure that’s a fair comparison.</p>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 <table class="table">
@@ -295,7 +314,6 @@ ul.task-list li input[type="checkbox"] {
 <p>LA’s Metro is once again the best among all 22 light rail services and the 10 largest.</p>
 <div class="cell">
 <div class="cell-output-display">
-
 <h1 style="color:#000;background:#FFFFFF;text-align:left;font-size:32px;font-style:normal;font-weight:bold;text-decoration:;letter-spacing:px;word-spacing:px;text-transform:;text-shadow:;margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px">Light Rail Reliability Rankings, 2022</h1>
 <div class="reactable html-widget html-fill-item" id="htmlwidget-ddac45fad850e0e7fb48" style="width:auto;height:auto;"></div>
 <p style="color:#000;background:#FFFFFF;text-align:left;font-size:16px;font-style:normal;font-weight:normal;text-decoration:;letter-spacing:px;word-spacing:px;text-transform:;text-shadow:;margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px">Data source: National Transit Database, FTA</p>
@@ -304,13 +322,21 @@ ul.task-list li input[type="checkbox"] {
 </div>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 <p>Curiously, the bigger the light rail service, the more reliable it tends to be. I won’t dig into this potentially spurious correlation; it’s just a “huh” moment, as no such pronounced correlation exists for commuter rail or bus.</p>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 <section id="changes-since-2021-2" class="level2">
@@ -318,7 +344,6 @@ ul.task-list li input[type="checkbox"] {
 <p>St.&nbsp;Louis’s Metro improved the most, shooting up 6 places from 11th to 5th most reliable. The Valley Metro Rail in Phoenix, Arizona, on the other hand, plummeted 10 places from 7th to 17th, the worst such fall of the year.</p>
 <div class="cell">
 <div class="cell-output-display">
-
 <h1 style="color:#000;background:#FFFFFF;text-align:left;font-size:32px;font-style:normal;font-weight:bold;text-decoration:;letter-spacing:px;word-spacing:px;text-transform:;text-shadow:;margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px">Ranking Changes</h1>
 <div class="reactable html-widget html-fill-item" id="htmlwidget-7bde8c8d4a14154d661d" style="width:auto;height:auto;"></div>
 <p style="color:#000;background:#FFFFFF;text-align:left;font-size:16px;font-style:normal;font-weight:normal;text-decoration:;letter-spacing:px;word-spacing:px;text-transform:;text-shadow:;margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px">Data source: National Transit Database, FTA</p>
@@ -356,7 +381,6 @@ ul.task-list li input[type="checkbox"] {
 <p>WMATA, which runs the Metro in Washington, DC, is once again the most reliable. The Maryland Transit Admin got bumped out of the top 10 by Atlanta’s MARTA, but not much is new beyond that. Miami’s Transportation and Public Works runs the least reliable heavy rail among all 15 in the country and the 10 largest.</p>
 <div class="cell">
 <div class="cell-output-display">
-
 <h1 style="color:#000;background:#FFFFFF;text-align:left;font-size:32px;font-style:normal;font-weight:bold;text-decoration:;letter-spacing:px;word-spacing:px;text-transform:;text-shadow:;margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px">Heavy Rail Reliability Rankings, 2022</h1>
 <div class="reactable html-widget html-fill-item" id="htmlwidget-26f6ed7b2458bd8c1911" style="width:auto;height:auto;"></div>
 <p style="color:#000;background:#FFFFFF;text-align:left;font-size:16px;font-style:normal;font-weight:normal;text-decoration:;letter-spacing:px;word-spacing:px;text-transform:;text-shadow:;margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px">Data source: National Transit Database, FTA</p>
@@ -365,7 +389,11 @@ ul.task-list li input[type="checkbox"] {
 </div>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 <section id="changes-since-2021-3" class="level2">
@@ -374,7 +402,6 @@ ul.task-list li input[type="checkbox"] {
 <p>Atlanta’s MARTA and the Staten Island Railway rose the most up the ranks and actually got more reliable. PATH, on the other hand, dropped from 4th to 6th place and breaks down more often–so much for all those weekend repairs.</p>
 <div class="cell">
 <div class="cell-output-display">
-
 <h1 style="color:#000;background:#FFFFFF;text-align:left;font-size:32px;font-style:normal;font-weight:bold;text-decoration:;letter-spacing:px;word-spacing:px;text-transform:;text-shadow:;margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px">Ranking Changes</h1>
 <div class="reactable html-widget html-fill-item" id="htmlwidget-54ac7eeedaa875a4da96" style="width:auto;height:auto;"></div>
 <p style="color:#000;background:#FFFFFF;text-align:left;font-size:16px;font-style:normal;font-weight:normal;text-decoration:;letter-spacing:px;word-spacing:px;text-transform:;text-shadow:;margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px">Data source: National Transit Database, FTA</p>
@@ -394,13 +421,21 @@ ul.task-list li input[type="checkbox"] {
 <p>As for ranking, PATH is 6th most reliable of all 15 heavy rail services and 5th among the 10 largest. Not bad. Indeed, when we plot reliability against size, PATH falls into the “Small and Sturdy” upper right quadrant, being more reliable and running fewer miles than average.</p>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 <p>Zooming in on the lower left quadrant of “Small and Breaky” trains, we find PATCO. It’s 10th most reliable out of 15. But at least it performs better than the similarly sized Maryland Transit Admin.</p>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 <table class="table">
@@ -482,6 +517,33 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       }
     }
   }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
   const toggleColorMode = (alternate) => {
     // Switch the stylesheets
     const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
@@ -548,13 +610,15 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       return localAlternateSentinel;
     }
   }
-  let localAlternateSentinel = 'default';
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
   // Dark / light mode switch
   window.quartoToggleColorScheme = () => {
     // Read the current dark / light value 
     let toAlternate = !hasAlternateSentinel();
     toggleColorMode(toAlternate);
     setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
   };
   // Ensure there is a toggle, if there isn't float one in the top right
   if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
@@ -633,10 +697,9 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     // clear code selection
     e.clearSelection();
   });
-  function tippyHover(el, contentFn) {
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
     const config = {
       allowHTML: true,
-      content: contentFn,
       maxWidth: 500,
       delay: 100,
       arrow: false,
@@ -646,8 +709,17 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       interactive: true,
       interactiveBorder: 10,
       theme: 'quarto',
-      placement: 'bottom-start'
+      placement: 'bottom-start',
     };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
     window.tippy(el, config); 
   }
   const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
@@ -660,6 +732,125 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       const id = href.replace(/^#\/?/, "");
       const note = window.document.getElementById(id);
       return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
     });
   }
       let selectedAnnoteEl;
@@ -703,6 +894,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
             }
             div.style.top = top - 2 + "px";
             div.style.height = height + 4 + "px";
+            div.style.left = 0;
             let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
             if (gutterDiv === null) {
               gutterDiv = window.document.createElement("div");
@@ -728,6 +920,32 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         });
         selectedAnnoteEl = undefined;
       };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
       // Attach click handler to the DT
       const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
       for (const annoteDlNode of annoteDls) {
@@ -788,6 +1006,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 });
 </script>
 </div> <!-- /content -->
+
 
 
 

@@ -4,8 +4,8 @@ title: "Gloucester County has fewer students"
 date: "2024-03-25"
 # date-modified: ""
 categories: [Education]
-image: ""
-image-alt: ""
+# image: ""
+# image-alt: ""
 execute:
   echo: false
   error: false

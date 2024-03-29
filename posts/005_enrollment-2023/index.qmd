@@ -2,7 +2,7 @@
 draft: false
 title: "How New Jersey's K-12 Enrollment Changed"
 date: "2023-12-04"
-# date-modified: ""
+date-modified: "2024-03-29"
 categories: [Education]
 execute:
   echo: false
@@ -234,7 +234,7 @@ Finally, you might notice decimals in the enrollment counts because they're full
 
 # State
 
-New Jersey is gaining people but losing kids. Our overall population [grew](https://en.wikipedia.org/wiki/New_Jersey#Population) 5.7% from 2010 to 2020, according to the US Census, but our number of school-age children (5-17 years old) [fell](https://public.tableau.com/shared/NNQXS9XKG?:display_count=n&:origin=viz_share_link&:embed=y) 1.2%. To wit, public K-12 enrollment shrank by 2.8%, almost 38,000 kids, over the last 10 academic years since Fall 2012. And as a sign of things to come, NJ's number of kids under 5 years old [fell](https://public.tableau.com/shared/PGC7B5N4T?:display_count=n&:origin=viz_share_link&:embed=y) 7.2%. (Note: This group shrank in all states but one.)
+New Jersey is gaining people but losing kids. Our overall population [grew](https://en.wikipedia.org/wiki/New_Jersey#Population) 5.7% from 2010 to 2020, according to the US Census, but our number of school-age children (5-17 years old) [fell](https://public.tableau.com/shared/BSPR4B47D?:display_count=n&:origin=viz_share_link) 1.2%. To wit, public K-12 enrollment shrank by 2.8%, almost 38,000 kids, over the last 10 academic years since Fall 2012. And as a sign of things to come, NJ's number of kids under 5 years old [fell](https://public.tableau.com/shared/T6956XMSZ?:display_count=n&:origin=viz_share_link) 7.2%. (Note: This group shrank in all states but one.)
 
 [![](census_age_5_17.png)](https://public.tableau.com/shared/25Q5C46BH?:display_count=n&:origin=viz_share_link&:embed=y)
 

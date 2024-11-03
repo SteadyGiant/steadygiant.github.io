@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2023-01-13">
+<meta name="dcterms.date" content="2024-11-03">
 
-<title>How Not to Rank Transit – Glassbro</title>
+<title>Cleaning National Transit Data with Ibis – Glassbro</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -70,35 +104,6 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
-  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
-
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
 
 <link rel="stylesheet" href="../../styles.css">
 </head>
@@ -156,9 +161,10 @@ window.Quarto = {
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">How Not to Rank Transit</h1>
-            <p class="subtitle lead">Denominators are good</p>
+      <h1 class="title">Cleaning National Transit Data with Ibis</h1>
+            <p class="subtitle lead">Or, Learn Ibis in Several Minutes</p>
                                 <div class="quarto-categories">
+                <div class="quarto-category">Python</div>
                 <div class="quarto-category">Transit</div>
               </div>
                   </div>
@@ -171,16 +177,10 @@ window.Quarto = {
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">January 13, 2023</p>
+        <p class="date">November 3, 2024</p>
       </div>
     </div>
     
-      <div>
-      <div class="quarto-title-meta-heading">Modified</div>
-      <div class="quarto-title-meta-contents">
-        <p class="date-modified">August 30, 2023</p>
-      </div>
-    </div>
       
     </div>
     
@@ -196,77 +196,227 @@ window.Quarto = {
 
 
 
-<p>From 2016 to 2021, NJ.com published a series of articles:</p>
+<p>Every holiday season, the Federal Transit Administration gifts us a <a href="https://www.transit.dot.gov/ntd/ntd-data?field_product_type_target_id=All&amp;year=all&amp;combine=breakdowns">dataset</a>: How much each transit agency’s vehicles broke down during the prior calendar year. It’s 2024. We now have 2023 data. Time to prove once again that New Jersey Transit isn’t the <a href="https://glassbro.blog/posts/003_how-not-to-rank-transit/">worst in the nation</a>, and therefore everything is fine and you should all stop whining or voting.</p>
+<p>But this year, I discovered <a href="https://ibis-project.org/">Ibis</a>, yet another Python library for working with data. If you paid attention, you know I’ve only used R–but exclusively its Tidyverse “dialect”–on this blog to date. I’ve been meaning to write about why I avoid Pandas (a.k.a. Base R for Python), or any other data analysis toolset on the Wall of Shame (base R, PySpark). But unlike those, Ibis is The Way. At long last I’m convinced to migrate away from my beloved Tidyverse + RStudio stack.</p>
+<p>In this post I’ll demonstrate how to clean breakdown data from the FTA’s National Transit Database (NTD) using Ibis. I also recommend Visual Studio Code, its <a href="https://marketplace.visualstudio.com/items?itemName=ms-toolsai.datawrangler">Data Wrangler</a> extension, and Jupyter (only for interactive work), which together provide an RStudio-like experience.</p>
+<p>While this stack has its hiccups (noted below)—Tidyverse + RStudio still provide the simplest, most ergonomic toolset for exploratory data analysis—Ibis is quite nice and ready for prime time. I bet it’ll one day overtake the others.</p>
+<p>Stay tuned for my 2023 Transit Breakdown Rankings in a later post. Now on with the code.</p>
+<div id="cell-2" class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> ibis</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Unlike R, Ibis doesn't have non-standard evaluation. Instaed we use this, which is</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># probably better; all these years &amp; I still don't understand closures in R.</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> ibis <span class="im">import</span> _</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># This provides a suite of column selection helpers like tidyselect.</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> ibis.selectors <span class="im">as</span> s</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co"># </span><span class="al">NOTE</span><span class="co">: By default, Ibis Tables print just the schema. This makes them print a preview</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co"># of the data, like Data Frames in R or Pandas do.</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>ibis.options.interactive <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co"># </span><span class="al">NOTE</span><span class="co">: The Polars backend can't do window functions. You'll get an error when calling</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co"># `rank()` or `row_number()`.</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>con <span class="op">=</span> ibis.duckdb.<span class="ex">connect</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-3" class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Source: https://www.transit.dot.gov/ntd/data-product/2023-breakdowns</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Direct download: https://data.transportation.gov/resource/amkt-4ehs.csv?$query=SELECT%0A%20%20%60agency%60%2C%0A%20%20%60city%60%2C%0A%20%20%60state%60%2C%0A%20%20%60ntd_id%60%2C%0A%20%20%60organization_type%60%2C%0A%20%20%60reporter_type%60%2C%0A%20%20%60report_year%60%2C%0A%20%20%60uace_code%60%2C%0A%20%20%60uza_name%60%2C%0A%20%20%60primary_uza_population%60%2C%0A%20%20%60agency_voms%60%2C%0A%20%20%60mode%60%2C%0A%20%20%60mode_name%60%2C%0A%20%20%60type_of_service%60%2C%0A%20%20%60mode_voms%60%2C%0A%20%20%60major_mechanical_failures%60%2C%0A%20%20%60major_mechanical_failures_1%60%2C%0A%20%20%60other_mechanical_failures%60%2C%0A%20%20%60other_mechanical_failures_1%60%2C%0A%20%20%60total_mechanical_failures%60%2C%0A%20%20%60total_mechanical_failures_1%60%2C%0A%20%20%60vehicle_passenger_car_miles%60%2C%0A%20%20%60vehicle_passenger_car_miles_1%60%2C%0A%20%20%60vehicle_passenger_car_revenue%60%2C%0A%20%20%60vehicle_passenger_car_miles_2%60%2C%0A%20%20%60train_miles%60%2C%0A%20%20%60train_miles_questionable%60%2C%0A%20%20%60train_revenue_miles%60%2C%0A%20%20%60train_revenue_miles_1%60%0AWHERE%20caseless_one_of(%60report_year%60%2C%20%222023%22)</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># The NTD for 2022 &amp; onward are on the Federal gov't's decent open data website with a</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># REST API that's actually nice to work with. However, the community-made Python API</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co"># client, sodapy, is no longer maintained: https://pypi.org/project/sodapy/</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># It still works, but it returns all fields as strings.</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>raw <span class="op">=</span> con.read_csv(<span class="st">"amkt-4ehs.csv"</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>raw.schema()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="2">
+<pre><code>ibis.Schema {
+  agency                         string
+  city                           string
+  state                          string
+  ntd_id                         string
+  organization_type              string
+  reporter_type                  string
+  report_year                    int64
+  uace_code                      int64
+  uza_name                       string
+  primary_uza_population         int64
+  agency_voms                    int64
+  mode                           string
+  mode_name                      string
+  type_of_service                string
+  mode_voms                      int64
+  major_mechanical_failures      int64
+  major_mechanical_failures_1    string
+  other_mechanical_failures      int64
+  other_mechanical_failures_1    string
+  total_mechanical_failures      int64
+  total_mechanical_failures_1    string
+  vehicle_passenger_car_miles    int64
+  vehicle_passenger_car_miles_1  string
+  vehicle_passenger_car_revenue  int64
+  vehicle_passenger_car_miles_2  string
+  train_miles                    int64
+  train_miles_questionable       string
+  train_revenue_miles            int64
+  train_revenue_miles_1          string
+}</code></pre>
+</div>
+</div>
+<p>Remember: Each row is an agency-mode-service type. For example:</p>
 <ul>
-<li><p>Nov 2016: <a href="https://www.nj.com/traffic/2016/11/feds_nj_transits_trains_are_the_worst_breakdown_th.html?outputType=amp"><strong>“Feds: NJ Transit’s trains are the worst, breakdown the most”</strong></a></p></li>
-<li><p>Nov 2016: <a href="https://www.nj.com/traffic/2016/11/nj_transit_buses_ranked_6th-worst_in_nation_for_breakdowns.html?outputType=amp"><strong>“NJ Transit buses ranked 6th-worst in nation for breakdowns”</strong></a></p></li>
-<li><p>Oct 2017: <a href="https://www.nj.com/traffic/2017/10/nj_transits_entire_system_is_breaking_down_at_an_alarming_rate.html?outputType=amp"><strong>“NJ Transit’s rail system is breaking down more this year”</strong></a></p></li>
-<li><p>Oct 2017: <a href="https://www.nj.com/traffic/2017/10/nj_transit_trains_are_no_longer_the_least_reliable_in_us_but_its_close.html?outputType=amp"><strong>“Boston’s stuck! Beantown rail fleet tops NJ Transit as least reliable”</strong></a></p></li>
-<li><p>Oct 2018: <a href="https://www.nj.com/traffic/2018/10/bad_in_the_usa_think_nj_transit_trains_are_unrelia.html?outputType=amp"><strong>“NJ Transit commuters are correct. They ride one of the worst railroads in the country”</strong></a></p></li>
-<li><p>Dec 2019: <a href="https://www.nj.com/traffic/2019/12/nj-transit-trains-are-the-nations-worst-again-feds-say.html?outputType=amp"><strong>“NJ Transit trains are the nation’s worst again, feds say”</strong></a></p></li>
-<li><p>Jan 2021: <a href="https://www.nj.com/news/2021/01/nj-transit-trains-ranked-the-worst-in-the-nation-again.html?outputType=amp"><strong>“NJ Transit trains ranked the worst in the nation – again”</strong></a></p></li>
+<li>Agency: NJ Transit
+<ul>
+<li>Modes:
+<ul>
+<li>Commuter Bus (MB)
+<ul>
+<li>Service types:
+<ul>
+<li>Directly Operated (DO)</li>
+<li>Purchased Transit (PT)</li>
+</ul></li>
+</ul></li>
+<li>Commuter Rail (CR)
+<ul>
+<li>Service types:
+<ul>
+<li>DO</li>
+</ul></li>
+</ul></li>
+<li>Light Rail (LR)
+<ul>
+<li>Service types:
+<ul>
+<li>DO: River Line, Newark LR (data combined)</li>
+<li>PT: Hudson-Bergen LR</li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul></li>
+<li>Agency: MTA Metro-North
+<ul>
+<li>…</li>
+</ul></li>
 </ul>
-<p>To this day, these articles get cited by <a href="https://www.nj.com/opinion/2022/02/nj-transit-needs-stable-funding-so-our-future-will-be-electric-and-equitable-opinion.html?outputType=amp">local</a> and <a href="https://prospect.org/infrastructure/transportation/climate-change-and-turnpike-in-new-jersey/">national</a> media and politicians.</p>
-<p>These articles are also very bad. A big, statewide transit agency like NJ Transit will always break down more times than the Port Authority of <a href="https://www.youtube.com/watch?v=5jfefls8Qos">Nowhere, Kansas</a>.</p>
-<p>Consider the MTA’s Long Island Rail Road (LIRR). In 2021, they <a href="https://www.transit.dot.gov/ntd/data-product/2021-breakdowns">reported</a> 78 breakdowns, while the Minneapolis METRO had 2. Is the LIRR worse than METRO? Well, LIRR is the largest commuter rail system in the country by miles traveled, driving almost 368 times more miles than METRO. It’s meaningless to compare their total breakdowns, and misleading to call one worse for it. This could be a textbook example of how to lie with statistics.</p>
-<p>Instead, we should compare breakdown <em>frequency</em>. <a href="https://www.njtransit.com/improve/on-time-performance/rail">Transit agencies</a> often track this as Mean Distance Between Failures, or <span class="math inline">\(\frac{Vehicle And Passenger Car Revenue Miles}{Breakdowns}\)</span>. This tells us how many miles an agency’s trains or buses travel, on average, before breaking down. The higher the better.</p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 21%">
-<col style="width: 30%">
-<col style="width: 21%">
-<col style="width: 26%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Agency</th>
-<th>Vehicle/Passenger Car Revenue Miles</th>
-<th>Breakdowns</th>
-<th>Mean Miles Between Breakdowns</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>MTA Long Island Rail Road</td>
-<td>58,398,960</td>
-<td>78</td>
-<td>748,705</td>
-</tr>
-<tr class="even">
-<td>Minneapolis METRO</td>
-<td>158,717</td>
-<td>2</td>
-<td>79,359</td>
-</tr>
-</tbody>
-</table>
-<p>[Source: Author calculations using the 2021 National Transit Database, FTA. See data and methodology [here]({{&lt; ref "post/ntd-2021" &gt;}} “The National Transit Database: Technical Intro”).]</p>
-<p>Now we see the LIRR breaks down less <em>often</em> than METRO, despite breaking down more <em>times</em>. LIRR trains travel over 748,000 miles before breaking down, on average, while METRO trains manage just over 79,000. LIRR is both much bigger than METRO and way more reliable.</p>
-<p>Take it from a more reputable news source like… NJ.com. The same author<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> of the above articles wrote <a href="https://www.nj.com/news/g66l-2019/01/b68e7cecf93393/nj-transit-just-hired-a-boss-f.html">this one</a> comparing NJ Transit and LIRR’s Mean Distance Between Breakdowns, not their total breakdowns.</p>
-<p>Thankfully, NJ.com isn’t publishing more of these bad articles.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> Even more fortunately, the NJ Democrats, who hold a trifecta, <a href="https://www.nj.com/opinion/2019/10/sweeney-no-more-excuses-its-time-to-fix-nj-transit.html">seem to</a> correctly believe that years of under-funding caused NJ Transit’s issues, and that the solution is full, stable funding.<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a> Then again, their leader got <a href="https://newjerseymonitor.com/2021/11/10/sweeney-concedes-stunning-loss-to-republican-durr/">ousted</a> and they’re <a href="https://www.politico.com/news/2022/12/11/new-jersey-bail-system-roll-back-00072781">sliiiiiding to the right</a> on other issues.</p>
-<p>But a problem lurks. Imagine a future where we fully fund NJ Transit. It’d be easy for a reactionary shithead to convince people that NJ Transit remains the Worst In The Nation despite all the money we pumped into it. They’d seem legit because NJ.com did the same analysis for years. Don’t lend credibility to austerity boosters by sanitizing bad analysis in our state’s Paper of Record.</p>
-<p>I humbly request that:</p>
-<ol type="1">
-<li><p>NJ.com either delete these bad breakdown articles or preface them with “This article is wrong” at the top in big, bold font;</p></li>
-<li><p>The American Prospect and everyone else citing these articles stop doing so;</p></li>
-<li><p>If we must, rank transit by breakdown <em>frequency</em>, not total breakdowns. I demonstrate how to do that <a href="../../posts/002_transit-breakdown-rankings-2021/index.html">here</a>.</p></li>
-</ol>
+<div id="cell-5" class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># So these are the primary keys.</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>keys <span class="op">=</span> [</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"ntd_id"</span>,</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"mode"</span>,</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"type_of_service"</span>,</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-6" class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>stg <span class="op">=</span> (</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    raw.<span class="bu">filter</span>(</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>        (</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>            _.mode.isin([<span class="st">"CR"</span>, <span class="st">"HR"</span>, <span class="st">"LR"</span>, <span class="st">"MB"</span>]),</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>            _.total_mechanical_failures <span class="op">&gt;</span> <span class="dv">0</span>,</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>            <span class="co"># </span><span class="al">NOTE</span><span class="co">: Ibis doesn't return nulls for != predicates, like dplyr or SQL do.</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>            (</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>                (_.total_mechanical_failures_1.isnull())</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>                <span class="op">|</span> (_.total_mechanical_failures_1 <span class="op">!=</span> <span class="st">"Q"</span>)</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>            ),</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>            _.vehicle_passenger_car_miles <span class="op">&gt;</span> <span class="dv">0</span>,</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>            (</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>                (_.vehicle_passenger_car_miles_2.isnull())</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>                <span class="op">|</span> (_.vehicle_passenger_car_miles_2 <span class="op">!=</span> <span class="st">"Q"</span>)</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>            ),</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>    .group_by(_.mode)</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>    .mutate(</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>        agency <span class="op">=</span> _.agency.re_replace(<span class="st">".*dba: "</span>, <span class="st">""</span>),</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>        breakdown_rate<span class="op">=</span>_.vehicle_passenger_car_miles <span class="op">/</span> _.total_mechanical_failures</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>    <span class="co"># </span><span class="al">NOTE</span><span class="co">: In Ibis can't create a column from another column created within the same</span></span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>    <span class="co"># `mutate()` call, like dplyr can.</span></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>    .mutate(rank<span class="op">=</span>ibis.rank().over(group_by<span class="op">=</span>_.mode, order_by<span class="op">=</span>_.breakdown_rate.desc()))</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>    <span class="co"># </span><span class="al">NOTE</span><span class="co">: Ranks start at 0!</span></span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>    .mutate(rank<span class="op">=</span>_.rank <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>    .order_by(_.mode, _.rank)</span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>    .select(</span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>        _.mode,</span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>        _.rank,</span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>        _.agency,</span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>        _.ntd_id,</span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>        _.city,</span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a>        _.state,</span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>        _.type_of_service,</span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>        _.breakdown_rate,</span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>        _.vehicle_passenger_car_miles,</span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a>        _.total_mechanical_failures,</span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a>    <span class="co"># </span><span class="al">NOTE</span><span class="co">: Data Wrangler can't view Ibis Tables.</span></span>
+<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a>    <span class="co"># .to_pandas()</span></span>
+<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-7" class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>biggest <span class="op">=</span> (</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    stg.mutate(</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>        row_num<span class="op">=</span>ibis.row_number().over(</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>            group_by<span class="op">=</span>_.mode, order_by<span class="op">=</span>_.vehicle_passenger_car_miles.desc()</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    .<span class="bu">filter</span>(_.row_num <span class="op">&lt;=</span> <span class="dv">10</span>)</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    .mutate(</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>        rank_biggest<span class="op">=</span>ibis.rank().over(group_by<span class="op">=</span>_.mode, order_by<span class="op">=</span>_.breakdown_rate.desc())</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    .mutate(rank_biggest<span class="op">=</span>_.rank_biggest <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    .order_by(_.mode, _.rank_biggest)</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    .select(s.all_of(keys), _.rank_biggest)</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>    <span class="co"># .to_pandas()</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-8" class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>last_year <span class="op">=</span> (</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    con.read_csv(<span class="st">"../breakdowns_2022.csv"</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    .rename(<span class="st">"snake_case"</span>)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    .select(</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>        s.all_of(keys),</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>        rank_2022<span class="op">=</span>_.rank,</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>        rank_2022_10_biggest<span class="op">=</span><span class="st">"rank,_10_biggest"</span>,</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># .to_pandas()</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-9" class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>clean <span class="op">=</span> (</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    stg.left_join(biggest, keys)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># </span><span class="al">NOTE</span><span class="co">: Ibis results contain "right" join keys, unlike dplyr and SQL.</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    .drop(s.endswith(<span class="st">"_right"</span>))</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    .relocate(_.rank_biggest, after<span class="op">=</span>_.rank)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    .left_join(last_year, keys)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    .drop(s.endswith(<span class="st">"_right"</span>))</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    .order_by(_.mode, _.rank)</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># .to_pandas()</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="checks" class="level1">
+<h1>Checks</h1>
+<div id="cell-11" class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># No duplicates.</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="co"># </span><span class="al">NOTE</span><span class="co">: Ibis IntegerScalars can't be compared with `==`. You must convert them to NumPy</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co"># objects first with `.to_pandas()`.</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> clean.distinct(on<span class="op">=</span>keys).count().to_pandas() <span class="op">==</span> clean.count().to_pandas()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-12" class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># </span><span class="al">NOTE</span><span class="co">: I miss R/RStudio's `View()`.</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>check <span class="op">=</span> (</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    clean.<span class="bu">filter</span>(_.rank_biggest.notnull())</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    .order_by(_.breakdown_rate.desc())</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    .to_pandas()</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="output" class="level1">
+<h1>Output</h1>
+<div id="cell-14" class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>clean.to_csv(<span class="st">"../breakdowns_2023.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 
 
+</section>
 
-
-<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
-
-<ol>
-<li id="fn1"><p>The author otherwise does good journalism. I ultimately blame editorial pressure for and approval of this type of reporting.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn2"><p>The author’s <a href="https://www.nj.com/news/2022/04/old-trains-are-affecting-nj-transit-performance-helps-on-the-way-but-is-it-soon-enough.html?outputType=amp">latest article</a> on NJT breakdowns uses Mean Distance Between Breakdowns instead, but leads with a barbed comment:</p>
-<blockquote class="blockquote">
-<p>When a train breaks down, statistics don’t matter if you’re the one waiting in the rain.</p>
-</blockquote>
-<p>Odd coming from an outlet that published breakdown statistics for the last 5 years.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn3"><p>I say NJ Transit is owed some serious back-pay, but that’s for another post.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-</ol>
-</section></div></main> <!-- /main -->
+</main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {

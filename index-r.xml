@@ -9,7 +9,7 @@
 <link>https://glassbro.blog/#category=R</link>
 <atom:link href="https://glassbro.blog/index-r.xml" rel="self" type="application/rss+xml"/>
 <description>Data, Politics, etc.</description>
-<generator>quarto-1.4.550</generator>
+<generator>quarto-1.5.57</generator>
 <lastBuildDate>Wed, 11 Jan 2023 05:00:00 GMT</lastBuildDate>
 <item>
   <title>Working with the National Transit Database</title>
@@ -445,7 +445,7 @@ font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">kable</span>()</span></code></pre></div>
 <div class="cell-output-display">
-<table class="table table-sm table-striped small">
+<table class="caption-top table table-sm table-striped small">
 <colgroup>
 <col style="width: 4%">
 <col style="width: 4%">
@@ -626,7 +626,7 @@ font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">kable</span>()</span></code></pre></div>
 <div class="cell-output-display">
-<table class="table table-sm table-striped small">
+<table class="caption-top table table-sm table-striped small">
 <colgroup>
 <col style="width: 5%">
 <col style="width: 33%">
@@ -897,7 +897,7 @@ font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">kable</span>()</span></code></pre></div>
 <div class="cell-output-display">
-<table class="table table-sm table-striped small">
+<table class="caption-top table table-sm table-striped small">
 <colgroup>
 <col style="width: 3%">
 <col style="width: 12%">

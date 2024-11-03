@@ -9,8 +9,479 @@
 <link>https://glassbro.blog/</link>
 <atom:link href="https://glassbro.blog/index.xml" rel="self" type="application/rss+xml"/>
 <description>Data, Politics, etc.</description>
-<generator>quarto-1.4.550</generator>
-<lastBuildDate>Mon, 25 Mar 2024 04:00:00 GMT</lastBuildDate>
+<generator>quarto-1.5.57</generator>
+<lastBuildDate>Sun, 03 Nov 2024 04:00:00 GMT</lastBuildDate>
+<item>
+  <title>Cleaning National Transit Data with Ibis</title>
+  <link>https://glassbro.blog/posts/008_ntd-ibis/</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<p>Every holiday season, the Federal Transit Administration gifts us a <a href="https://www.transit.dot.gov/ntd/ntd-data?field_product_type_target_id=All&amp;year=all&amp;combine=breakdowns">dataset</a>: How much each transit agency’s vehicles broke down during the prior calendar year. It’s 2024. We now have 2023 data. Time to prove once again that New Jersey Transit isn’t the <a href="https://glassbro.blog/posts/003_how-not-to-rank-transit/">worst in the nation</a>, and therefore everything is fine and you should all stop whining or voting.</p>
+<p>But this year, I discovered <a href="https://ibis-project.org/">Ibis</a>, yet another Python library for working with data. If you paid attention, you know I’ve only used R–but exclusively its Tidyverse “dialect”–on this blog to date. I’ve been meaning to write about why I avoid Pandas (a.k.a. Base R for Python), or any other data analysis toolset on the Wall of Shame (base R, PySpark). But unlike those, Ibis is The Way. At long last I’m convinced to migrate away from my beloved Tidyverse + RStudio stack.</p>
+<p>In this post I’ll demonstrate how to clean breakdown data from the FTA’s National Transit Database (NTD) using Ibis. I also recommend Visual Studio Code, its <a href="https://marketplace.visualstudio.com/items?itemName=ms-toolsai.datawrangler">Data Wrangler</a> extension, and Jupyter (only for interactive work), which together provide an RStudio-like experience.</p>
+<p>While this stack has its hiccups (noted below)—Tidyverse + RStudio still provide the simplest, most ergonomic toolset for exploratory data analysis—Ibis is quite nice and ready for prime time. I bet it’ll one day overtake the others.</p>
+<p>Stay tuned for my 2023 Transit Breakdown Rankings in a later post. Now on with the code.</p>
+<div id="cell-2" class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> ibis</span>
+<span id="cb1-2"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Unlike R, Ibis doesn't have non-standard evaluation. Instaed we use this, which is</span></span>
+<span id="cb1-3"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># probably better; all these years &amp; I still don't understand closures in R.</span></span>
+<span id="cb1-4"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> ibis <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> _</span>
+<span id="cb1-5"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># This provides a suite of column selection helpers like tidyselect.</span></span>
+<span id="cb1-6"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> ibis.selectors <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">as</span> s</span>
+<span id="cb1-7"></span>
+<span id="cb1-8"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># </span><span class="al" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">NOTE</span><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">: By default, Ibis Tables print just the schema. This makes them print a preview</span></span>
+<span id="cb1-9"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># of the data, like Data Frames in R or Pandas do.</span></span>
+<span id="cb1-10">ibis.options.interactive <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span></span>
+<span id="cb1-11"></span>
+<span id="cb1-12"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># </span><span class="al" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">NOTE</span><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">: The Polars backend can't do window functions. You'll get an error when calling</span></span>
+<span id="cb1-13"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># `rank()` or `row_number()`.</span></span>
+<span id="cb1-14">con <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> ibis.duckdb.<span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">connect</span>()</span></code></pre></div>
+</div>
+<div id="cell-3" class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Source: https://www.transit.dot.gov/ntd/data-product/2023-breakdowns</span></span>
+<span id="cb2-2"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Direct download: https://data.transportation.gov/resource/amkt-4ehs.csv?$query=SELECT%0A%20%20%60agency%60%2C%0A%20%20%60city%60%2C%0A%20%20%60state%60%2C%0A%20%20%60ntd_id%60%2C%0A%20%20%60organization_type%60%2C%0A%20%20%60reporter_type%60%2C%0A%20%20%60report_year%60%2C%0A%20%20%60uace_code%60%2C%0A%20%20%60uza_name%60%2C%0A%20%20%60primary_uza_population%60%2C%0A%20%20%60agency_voms%60%2C%0A%20%20%60mode%60%2C%0A%20%20%60mode_name%60%2C%0A%20%20%60type_of_service%60%2C%0A%20%20%60mode_voms%60%2C%0A%20%20%60major_mechanical_failures%60%2C%0A%20%20%60major_mechanical_failures_1%60%2C%0A%20%20%60other_mechanical_failures%60%2C%0A%20%20%60other_mechanical_failures_1%60%2C%0A%20%20%60total_mechanical_failures%60%2C%0A%20%20%60total_mechanical_failures_1%60%2C%0A%20%20%60vehicle_passenger_car_miles%60%2C%0A%20%20%60vehicle_passenger_car_miles_1%60%2C%0A%20%20%60vehicle_passenger_car_revenue%60%2C%0A%20%20%60vehicle_passenger_car_miles_2%60%2C%0A%20%20%60train_miles%60%2C%0A%20%20%60train_miles_questionable%60%2C%0A%20%20%60train_revenue_miles%60%2C%0A%20%20%60train_revenue_miles_1%60%0AWHERE%20caseless_one_of(%60report_year%60%2C%20%222023%22)</span></span>
+<span id="cb2-3"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># The NTD for 2022 &amp; onward are on the Federal gov't's decent open data website with a</span></span>
+<span id="cb2-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># REST API that's actually nice to work with. However, the community-made Python API</span></span>
+<span id="cb2-5"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># client, sodapy, is no longer maintained: https://pypi.org/project/sodapy/</span></span>
+<span id="cb2-6"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># It still works, but it returns all fields as strings.</span></span>
+<span id="cb2-7">raw <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> con.read_csv(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"amkt-4ehs.csv"</span>)</span>
+<span id="cb2-8">raw.schema()</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="2">
+<pre><code>ibis.Schema {
+  agency                         string
+  city                           string
+  state                          string
+  ntd_id                         string
+  organization_type              string
+  reporter_type                  string
+  report_year                    int64
+  uace_code                      int64
+  uza_name                       string
+  primary_uza_population         int64
+  agency_voms                    int64
+  mode                           string
+  mode_name                      string
+  type_of_service                string
+  mode_voms                      int64
+  major_mechanical_failures      int64
+  major_mechanical_failures_1    string
+  other_mechanical_failures      int64
+  other_mechanical_failures_1    string
+  total_mechanical_failures      int64
+  total_mechanical_failures_1    string
+  vehicle_passenger_car_miles    int64
+  vehicle_passenger_car_miles_1  string
+  vehicle_passenger_car_revenue  int64
+  vehicle_passenger_car_miles_2  string
+  train_miles                    int64
+  train_miles_questionable       string
+  train_revenue_miles            int64
+  train_revenue_miles_1          string
+}</code></pre>
+</div>
+</div>
+<p>Remember: Each row is an agency-mode-service type. For example:</p>
+<ul>
+<li>Agency: NJ Transit
+<ul>
+<li>Modes:
+<ul>
+<li>Commuter Bus (MB)
+<ul>
+<li>Service types:
+<ul>
+<li>Directly Operated (DO)</li>
+<li>Purchased Transit (PT)</li>
+</ul></li>
+</ul></li>
+<li>Commuter Rail (CR)
+<ul>
+<li>Service types:
+<ul>
+<li>DO</li>
+</ul></li>
+</ul></li>
+<li>Light Rail (LR)
+<ul>
+<li>Service types:
+<ul>
+<li>DO: River Line, Newark LR (data combined)</li>
+<li>PT: Hudson-Bergen LR</li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul></li>
+<li>Agency: MTA Metro-North
+<ul>
+<li>…</li>
+</ul></li>
+</ul>
+<div id="cell-5" class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># So these are the primary keys.</span></span>
+<span id="cb4-2">keys <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> [</span>
+<span id="cb4-3">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"ntd_id"</span>,</span>
+<span id="cb4-4">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"mode"</span>,</span>
+<span id="cb4-5">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"type_of_service"</span>,</span>
+<span id="cb4-6">]</span></code></pre></div>
+</div>
+<div id="cell-6" class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1">stg <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> (</span>
+<span id="cb5-2">    raw.<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">filter</span>(</span>
+<span id="cb5-3">        (</span>
+<span id="cb5-4">            _.mode.isin([<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"CR"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"HR"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"LR"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"MB"</span>]),</span>
+<span id="cb5-5">            _.total_mechanical_failures <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb5-6">            <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># </span><span class="al" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">NOTE</span><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">: Ibis doesn't return nulls for != predicates, like dplyr or SQL do.</span></span>
+<span id="cb5-7">            (</span>
+<span id="cb5-8">                (_.total_mechanical_failures_1.isnull())</span>
+<span id="cb5-9">                <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|</span> (_.total_mechanical_failures_1 <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Q"</span>)</span>
+<span id="cb5-10">            ),</span>
+<span id="cb5-11">            _.vehicle_passenger_car_miles <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb5-12">            (</span>
+<span id="cb5-13">                (_.vehicle_passenger_car_miles_2.isnull())</span>
+<span id="cb5-14">                <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|</span> (_.vehicle_passenger_car_miles_2 <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Q"</span>)</span>
+<span id="cb5-15">            ),</span>
+<span id="cb5-16">        )</span>
+<span id="cb5-17">    )</span>
+<span id="cb5-18">    .group_by(_.mode)</span>
+<span id="cb5-19">    .mutate(</span>
+<span id="cb5-20">        agency <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> _.agency.re_replace(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">".*dba: "</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span>),</span>
+<span id="cb5-21">        breakdown_rate<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>_.vehicle_passenger_car_miles <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> _.total_mechanical_failures</span>
+<span id="cb5-22">    )</span>
+<span id="cb5-23">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># </span><span class="al" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">NOTE</span><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">: In Ibis can't create a column from another column created within the same</span></span>
+<span id="cb5-24">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># `mutate()` call, like dplyr can.</span></span>
+<span id="cb5-25">    .mutate(rank<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>ibis.rank().over(group_by<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>_.mode, order_by<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>_.breakdown_rate.desc()))</span>
+<span id="cb5-26">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># </span><span class="al" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">NOTE</span><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">: Ranks start at 0!</span></span>
+<span id="cb5-27">    .mutate(rank<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>_.rank <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>)</span>
+<span id="cb5-28">    .order_by(_.mode, _.rank)</span>
+<span id="cb5-29">    .select(</span>
+<span id="cb5-30">        _.mode,</span>
+<span id="cb5-31">        _.rank,</span>
+<span id="cb5-32">        _.agency,</span>
+<span id="cb5-33">        _.ntd_id,</span>
+<span id="cb5-34">        _.city,</span>
+<span id="cb5-35">        _.state,</span>
+<span id="cb5-36">        _.type_of_service,</span>
+<span id="cb5-37">        _.breakdown_rate,</span>
+<span id="cb5-38">        _.vehicle_passenger_car_miles,</span>
+<span id="cb5-39">        _.total_mechanical_failures,</span>
+<span id="cb5-40">    )</span>
+<span id="cb5-41">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># </span><span class="al" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">NOTE</span><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">: Data Wrangler can't view Ibis Tables.</span></span>
+<span id="cb5-42">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># .to_pandas()</span></span>
+<span id="cb5-43">)</span></code></pre></div>
+</div>
+<div id="cell-7" class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1">biggest <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> (</span>
+<span id="cb6-2">    stg.mutate(</span>
+<span id="cb6-3">        row_num<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>ibis.row_number().over(</span>
+<span id="cb6-4">            group_by<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>_.mode, order_by<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>_.vehicle_passenger_car_miles.desc()</span>
+<span id="cb6-5">        )</span>
+<span id="cb6-6">    )</span>
+<span id="cb6-7">    .<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">filter</span>(_.row_num <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>)</span>
+<span id="cb6-8">    .mutate(</span>
+<span id="cb6-9">        rank_biggest<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>ibis.rank().over(group_by<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>_.mode, order_by<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>_.breakdown_rate.desc())</span>
+<span id="cb6-10">    )</span>
+<span id="cb6-11">    .mutate(rank_biggest<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>_.rank_biggest <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>)</span>
+<span id="cb6-12">    .order_by(_.mode, _.rank_biggest)</span>
+<span id="cb6-13">    .select(s.all_of(keys), _.rank_biggest)</span>
+<span id="cb6-14">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># .to_pandas()</span></span>
+<span id="cb6-15">)</span></code></pre></div>
+</div>
+<div id="cell-8" class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1">last_year <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> (</span>
+<span id="cb7-2">    con.read_csv(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"../breakdowns_2022.csv"</span>)</span>
+<span id="cb7-3">    .rename(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"snake_case"</span>)</span>
+<span id="cb7-4">    .select(</span>
+<span id="cb7-5">        s.all_of(keys),</span>
+<span id="cb7-6">        rank_2022<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>_.rank,</span>
+<span id="cb7-7">        rank_2022_10_biggest<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"rank,_10_biggest"</span>,</span>
+<span id="cb7-8">    )</span>
+<span id="cb7-9">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># .to_pandas()</span></span>
+<span id="cb7-10">)</span></code></pre></div>
+</div>
+<div id="cell-9" class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1">clean <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> (</span>
+<span id="cb8-2">    stg.left_join(biggest, keys)</span>
+<span id="cb8-3">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># </span><span class="al" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">NOTE</span><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">: Ibis results contain "right" join keys, unlike dplyr and SQL.</span></span>
+<span id="cb8-4">    .drop(s.endswith(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"_right"</span>))</span>
+<span id="cb8-5">    .relocate(_.rank_biggest, after<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>_.rank)</span>
+<span id="cb8-6">    .left_join(last_year, keys)</span>
+<span id="cb8-7">    .drop(s.endswith(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"_right"</span>))</span>
+<span id="cb8-8">    .order_by(_.mode, _.rank)</span>
+<span id="cb8-9">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># .to_pandas()</span></span>
+<span id="cb8-10">)</span></code></pre></div>
+</div>
+<section id="checks" class="level1">
+<h1>Checks</h1>
+<div id="cell-11" class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># No duplicates.</span></span>
+<span id="cb9-2"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># </span><span class="al" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">NOTE</span><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">: Ibis IntegerScalars can't be compared with `==`. You must convert them to NumPy</span></span>
+<span id="cb9-3"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># objects first with `.to_pandas()`.</span></span>
+<span id="cb9-4"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">assert</span> clean.distinct(on<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>keys).count().to_pandas() <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> clean.count().to_pandas()</span></code></pre></div>
+</div>
+<div id="cell-12" class="cell">
+<div class="sourceCode cell-code" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># </span><span class="al" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">NOTE</span><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">: I miss R/RStudio's `View()`.</span></span>
+<span id="cb10-2">check <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> (</span>
+<span id="cb10-3">    clean.<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">filter</span>(_.rank_biggest.notnull())</span>
+<span id="cb10-4">    .order_by(_.breakdown_rate.desc())</span>
+<span id="cb10-5">    .to_pandas()</span>
+<span id="cb10-6">)</span></code></pre></div>
+</div>
+</section>
+<section id="output" class="level1">
+<h1>Output</h1>
+<div id="cell-14" class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1">clean.to_csv(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"../breakdowns_2023.csv"</span>)</span></code></pre></div>
+</div>
+
+
+</section>
+
+ ]]></description>
+  <category>Python</category>
+  <category>Transit</category>
+  <guid>https://glassbro.blog/posts/008_ntd-ibis/</guid>
+  <pubDate>Sun, 03 Nov 2024 04:00:00 GMT</pubDate>
+  <media:content url="https://ibis-project.org/logo.svg" medium="image" type="image/svg+xml"/>
+</item>
 <item>
   <title>Gloucester County has fewer students</title>
   <link>https://glassbro.blog/posts/007_enrollment-2023-glouco/</link>
@@ -30,7 +501,7 @@
 <li><p>Unlike the US, NJ’s pop of children aged 5-17 years shrank;</p></li>
 <li><p>Like the US, NJ’s count of children below the age of 5 shrank, though more slowly.</p></li>
 </ul>
-<table class="table">
+<table class="caption-top table">
 <thead>
 <tr class="header">
 <th>Place</th>
@@ -229,7 +700,7 @@
 </div>
 <p>We could say that NJT is making the best of a <a href="https://newjerseymonitor.com/2023/05/04/no-dedicated-funding-source-for-nj-transit-this-year-budget-chair-says/">bad situation</a>–<a href="https://www.njpp.org/publications/report/getting-back-on-track-fully-fund-nj-transit-by-taxing-big-corporations/#_edn23">under-funding</a>, a <a href="https://newjerseymonitor.com/2023/07/20/no-fare-hikes-in-nj-transits-2-9b-budget-but-fiscal-cliff-still-looms/">fiscal cliff</a>, raiding its capital budget to fund operations for years–but it’s not turning around.</p>
 <p>But imagine if we properly funded this thing! NJ Transit’s commuter rail ranks in the middle for breakdown frequency, despite years of capital under-investment. If you actually want to fix NJT, fund it.</p>
-<table class="table">
+<table class="caption-top table">
 <colgroup>
 <col style="width: 101%">
 </colgroup>
@@ -296,7 +767,7 @@
 </div>
 </div>
 </div>
-<table class="table">
+<table class="caption-top table">
 <colgroup>
 <col style="width: 101%">
 </colgroup>
@@ -358,7 +829,7 @@
 <h2 class="anchored" data-anchor-id="new-jersey-transit-2">New Jersey Transit</h2>
 <p>NJ Transit reports two light rail services to the FTA: The Hudson-Bergen LR, which is Purchased Transit (PT), and a combined record for the Directly Operated (DO) River Line and Newark LRs.</p>
 <p>The River Line and Newark LR are together now in 18th place out of 22, up 3 places from 2021. Meanwhile, the Hudson-Bergen LR is 15th, up from 17th. They’re still among the least reliable, but I’ll take improvement.</p>
-<table class="table">
+<table class="caption-top table">
 <colgroup>
 <col style="width: 100%">
 </colgroup>
@@ -441,7 +912,7 @@
 </div>
 </div>
 </div>
-<table class="table">
+<table class="caption-top table">
 <colgroup>
 <col style="width: 100%">
 </colgroup>
@@ -650,7 +1121,7 @@
 
 
 
-<table class="table">
+<table class="caption-top table">
 <tbody>
 <tr class="odd">
 <td><em>If you live anywhere in New Jersey, consider signing <a href="https://actionnetwork.org/petitions/dont-widen-the-nj-turnpike-in-south-jersey/"><strong>this petition</strong></a> against the proposed widening of the NJ Turnpike in South Jersey. Widening roads doesn’t cure congestion; it just gets more cars on the road. That’s more emissions, more sprawl, more truck-served warehouses, and more motor vehicle fatalities.</em></td>
@@ -752,7 +1223,7 @@
 <p>These articles are also very bad. A big, statewide transit agency like NJ Transit will always break down more times than the Port Authority of <a href="https://www.youtube.com/watch?v=5jfefls8Qos">Nowhere, Kansas</a>.</p>
 <p>Consider the MTA’s Long Island Rail Road (LIRR). In 2021, they <a href="https://www.transit.dot.gov/ntd/data-product/2021-breakdowns">reported</a> 78 breakdowns, while the Minneapolis METRO had 2. Is the LIRR worse than METRO? Well, LIRR is the largest commuter rail system in the country by miles traveled, driving almost 368 times more miles than METRO. It’s meaningless to compare their total breakdowns, and misleading to call one worse for it. This could be a textbook example of how to lie with statistics.</p>
 <p>Instead, we should compare breakdown <em>frequency</em>. <a href="https://www.njtransit.com/improve/on-time-performance/rail">Transit agencies</a> often track this as Mean Distance Between Failures, or <img src="https://latex.codecogs.com/png.latex?%5Cfrac%7BVehicle%20And%20Passenger%20Car%20Revenue%20Miles%7D%7BBreakdowns%7D">. This tells us how many miles an agency’s trains or buses travel, on average, before breaking down. The higher the better.</p>
-<table class="table">
+<table class="caption-top table">
 <colgroup>
 <col style="width: 21%">
 <col style="width: 30%">
@@ -859,7 +1330,7 @@
 </div>
 </div>
 </div>
-<table class="table">
+<table class="caption-top table">
 <colgroup>
 <col style="width: 101%">
 </colgroup>
@@ -904,7 +1375,7 @@
 </div>
 </div>
 </div>
-<table class="table">
+<table class="caption-top table">
 <colgroup>
 <col style="width: 101%">
 </colgroup>
@@ -949,7 +1420,7 @@
 <p>We now see NJ Transit reports two light rail groups to the FTA: The Hudson-Bergen LR, which is purchased transit, and a combined record for the directly operated River Line and Newark LRs.</p>
 <p>Neither of NJT’s LR groups do particularly well, and the directly operated lines are the less reliable ones.</p>
 <p>I find it odd that NJ Transit runs some of the largest commuter rail and bus systems in the country, yet some of the tiniest light rails. Even combining the PT and DO vehicle/passenger car revenue miles doesn’t place them among the 10 largest. But that’s for another post.</p>
-<table class="table">
+<table class="caption-top table">
 <colgroup>
 <col style="width: 101%">
 </colgroup>
@@ -1023,7 +1494,7 @@
 </div>
 </div>
 <p>Across the Delaware from PATCO, SEPTA is both much bigger and more reliable, so I believe PATCO can improve.</p>
-<table class="table">
+<table class="caption-top table">
 <colgroup>
 <col style="width: 101%">
 </colgroup>
@@ -1504,7 +1975,7 @@ font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">kable</span>()</span></code></pre></div>
 <div class="cell-output-display">
-<table class="table table-sm table-striped small">
+<table class="caption-top table table-sm table-striped small">
 <colgroup>
 <col style="width: 4%">
 <col style="width: 4%">
@@ -1685,7 +2156,7 @@ font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">kable</span>()</span></code></pre></div>
 <div class="cell-output-display">
-<table class="table table-sm table-striped small">
+<table class="caption-top table table-sm table-striped small">
 <colgroup>
 <col style="width: 5%">
 <col style="width: 33%">
@@ -1956,7 +2427,7 @@ font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">kable</span>()</span></code></pre></div>
 <div class="cell-output-display">
-<table class="table table-sm table-striped small">
+<table class="caption-top table table-sm table-striped small">
 <colgroup>
 <col style="width: 3%">
 <col style="width: 12%">

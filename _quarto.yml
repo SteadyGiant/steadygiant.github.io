@@ -3,15 +3,15 @@ project:
 
 website:
   title: "Glassbro"
-  description: "Data, Politics, etc."
+  description: "NJ, Policy, Data, in that order."
   site-url: "https://glassbro.blog"
   navbar:
     right:
       - about.qmd
       - icon: github
         href: https://github.com/SteadyGiant
-      - icon: twitter
-        href: https://twitter.com/TheEmGotter
+      # - icon: twitter
+      #   href: https://twitter.com/
       - icon: cloud
         href: https://bsky.app/profile/glassbro.bsky.social
       - icon: rss

@@ -1,6 +1,6 @@
 # just like everybody else
 
-![Rudimentary pen sketch of a face.](https://cdn.bsky.app/img/avatar/plain/did:plc:wjidur5ivlgd3j4kdpqlq6nc/bafkreidsk2tcoiafttkzvwgwsbidenfvj3a6qok4ibw67y67ny65pcpgyu "Glassbro")
+<img src="https://cdn.bsky.app/img/avatar/plain/did:plc:wjidur5ivlgd3j4kdpqlq6nc/bafkreidsk2tcoiafttkzvwgwsbidenfvj3a6qok4ibw67y67ny65pcpgyu" width="150" alt="Rudimentary pen sketch of a human face.">
 
 I'm an influential writer.
 

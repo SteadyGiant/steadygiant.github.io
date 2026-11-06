@@ -6,7 +6,7 @@ I'm an influential writer.
 
 [Read my blog](https://blog.everet.ink)
 
-[Follow me on Bluesky](https://glassbro.bsky.social)
+[Follow me on Bluesky](https://bsky.app/profile/everet.ink)
 
 [Email me](mailto:fanmail@everet.ink)
 

@@ -4,7 +4,7 @@
 
 I'm an influential writer.
 
-[Read my blog](https://glassbro.leaflet.pub)
+[Read my blog](https://blog.everet.ink)
 
 [Follow me on Bluesky](https://glassbro.bsky.social)
 
